@@ -1,0 +1,6 @@
+class InflowTransactionHasANegativeAmount(Exception):
+    ...
+
+
+class OutflowTransactionHasAPositiveAmount(Exception):
+    ...
