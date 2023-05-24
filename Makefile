@@ -26,12 +26,23 @@ clean-cache:
 	sudo find . -name '*,cover' -delete;
 	sudo find . -iname __pycache__ -delete;
 
+
 ### actions to install env
 install:
-	make config && pip install -r requirements.txt
+	pip install -r requirements.txt
 
 dev-install:
-	make config && pip install -r requirements-dev.txt
+	pip install -r requirements-dev.txt
+
+
+### actions to build new envs
+collectstatic:
+	mkdir -p /opt/belvo_files/{static,media} \
+		&& ./manage.py collectstatic --no-input --clear
+
+build-db:
+	./manage.py migrate
+
 
 ### actions to test
 lint:
@@ -42,3 +53,6 @@ test: clean-cache
 
 coverage-xml: clean-cache
 	pytest --junit-xml=junit.xml .
+
+
+
