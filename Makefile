@@ -36,13 +36,15 @@ dev-install:
 
 
 ### actions to build new envs
-collectstatic:
+collect-static-files:
 	mkdir -p /opt/belvo_files/{static,media} \
 		&& ./manage.py collectstatic --no-input --clear
 
-build-db:
-	./manage.py migrate
+apply-db-migrations:
+	./manage.py migrate --noinput
 
+build-environment:
+	make collect-static-files && make apply-db-migrations
 
 ### actions to test
 lint:

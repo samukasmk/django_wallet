@@ -78,8 +78,8 @@ WSGI_APPLICATION = 'core.wsgi.application'
 DATABASES = {
     'default': {
         'ENGINE': os.environ.get('DATABASE_ENGINE', 'django.db.backends.postgresql'),
-        'NAME': os.environ.get('DATABASE_NAME', 'belvo_django'),
-        'USER': os.environ.get('DATABASE_USER', 'belvo_django'),
+        'NAME': os.environ.get('DATABASE_NAME', 'belvo_wallet'),
+        'USER': os.environ.get('DATABASE_USER', 'belvo_wallet'),
         'PASSWORD': os.environ.get('DATABASE_PASSWORD', 'P4s5W0RD'),
         'HOST': os.environ.get('DATABASE_HOST', '127.0.0.1'),
         'PORT': os.environ.get('DATABASE_PORT', 5432),

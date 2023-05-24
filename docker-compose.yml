@@ -2,7 +2,7 @@ version: '3.9'
 
 services:
   django:
-    image: belvo_django
+    image: belvo_wallet
     build:
       context: .
     command: gunicorn core.wsgi:application --bind 0.0.0.0:5000
@@ -11,7 +11,7 @@ services:
       - DATABASE_HOST=postgres
       - DEBUG=FALSE
     volumes:
-      - .:/opt/belvo_django
+      - .:/opt/belvo_wallet
       - belvo_static_volume:/opt/belvo_files/static
       - belvo_media_volume:/opt/belvo_files/media
     restart: on-failure
@@ -30,9 +30,9 @@ services:
       - belvo_postgres:/var/lib/postgresql/data
     restart: on-failure
     environment:
-      - POSTGRES_USER=belvo_django
+      - POSTGRES_USER=belvo_wallet
       - POSTGRES_PASSWORD=P4s5W0RD
-      - POSTGRES_DB=belvo_django
+      - POSTGRES_DB=belvo_wallet
     networks:
       - local
 
@@ -47,6 +47,21 @@ services:
       - 80:80
     networks:
       - local
+
+  build-environment:
+    image: belvo_wallet
+    command: make build-environment
+    environment:
+      - DJANGO_SETTINGS_MODULE=core.settings
+      - DATABASE_HOST=postgres
+      - DEBUG=FALSE
+    volumes:
+      - .:/opt/belvo_wallet
+    depends_on:
+      - postgres
+    networks:
+      - local
+
 
 volumes:
   belvo_postgres:
