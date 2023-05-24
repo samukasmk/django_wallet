@@ -1,0 +1,12 @@
+[tool.pytest.ini_options]
+minversion = "7.3.1"
+addopts = "-s -v --tb=long --cache-clear --reuse-db --pylama --rootdir=. --cov=. --cov-report=html:htmlcov --cov-report=xml:coverage.xml"
+testpaths = ["tests", "apps", "core"]
+python_files = ["tests.py", "test_*.py", "*_tests.py"]
+pythonpath = "."
+
+[tool.pylama.ini_options]
+skip = ["*/.git/*" , "*/.idea/*", "*/.pytest_cache/*", "*/.tox/*", "*/collect/*", "*/conf/*", "*/log/*", "*/static/*"]
+format = "pylint"
+linters = ["pyflakes", "pylint"]
+async = "True"
