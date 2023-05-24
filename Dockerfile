@@ -10,9 +10,9 @@ RUN apt-get update && \
     apt autoclean && \
     rm -rf /var/lib/apt/lists/*
 
-WORKDIR /opt/belvo_django
+WORKDIR /opt/belvo_wallet
 
-COPY . /opt/belvo_django
+COPY . /opt/belvo_wallet
 
 RUN make install
 RUN make collectstatic
