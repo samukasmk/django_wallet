@@ -5,7 +5,7 @@ from apps.wallet.tests.conftest import sample_transactions_data
 
 
 @pytest.mark.django_db
-def test_get_specific_transactions(api_client, sample_transactions_models):
+def test_list_transactions(api_client, sample_transactions_models):
     """ Test endpoint to get all transactions """
     transactions_to_get = sample_transactions_data()
 
@@ -14,5 +14,5 @@ def test_get_specific_transactions(api_client, sample_transactions_models):
 
     # get existent objects of database from api
     response = api_client.get('/transactions/')
-    assert response == status.HTTP_200_OK
+    assert response.status_code == status.HTTP_200_OK
     assert response.data == transactions_to_get

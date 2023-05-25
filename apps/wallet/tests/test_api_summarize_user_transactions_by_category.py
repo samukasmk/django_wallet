@@ -14,7 +14,7 @@ def test_summarize_all_transactions_by_user(api_client, sample_transactions_mode
 
     # get existent objects of database from api
     response = api_client.get(f'/transactions/{user_email}/summary')
-    assert response == status.HTTP_200_OK
+    assert response.status_code == status.HTTP_200_OK
 
     # assert response
     assert response.data == user_summary_by_category
