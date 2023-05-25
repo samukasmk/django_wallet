@@ -53,32 +53,6 @@ def sample_transactions_data():
              "user_email": "janedoe@email.com"}]
 
 
-def sample_outflow_transactions():
-    """ Sample data of valid transactions
-
-        always rebuilding the list of data to prevent problems of one test changing data from another """
-
-    return [{"reference": "000151",
-             "date": "2020-01-01",
-             "amount": "-151.15",
-             "type": "outflow",
-             "category": "groceries",
-             "user_email": "johndoe@email.com"}]
-
-
-def sample_inflow_transactions():
-    """ Sample data of valid transactions
-
-        always rebuilding the list of data to prevent problems of one test changing data from another """
-
-    return [{"reference": "000152",
-             "date": "2020-01-11",
-             "amount": "5500.93",
-             "type": "inflow",
-             "category": "salary",
-             "user_email": "janedoe@email.com"}]
-
-
 def normalize_dict_to_model(transaction_dict):
     """ Normalize dict object of a transaction to expected data in database """
     # normalizing type code
@@ -87,7 +61,7 @@ def normalize_dict_to_model(transaction_dict):
     elif transaction_dict['type'] == 'outflow':
         transaction_dict['type'] = FinancialTransaction.TransactionType.outflow
 
-    # normalizing amount
+    # normalizing amount value
     transaction_dict['amount'] = float(transaction_dict['amount'])
 
     return transaction_dict
