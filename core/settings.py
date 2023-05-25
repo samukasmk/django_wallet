@@ -36,7 +36,7 @@ INSTALLED_APPS = [
     'django.contrib.sessions',
     'django.contrib.messages',
     'django.contrib.staticfiles',
-
+    'rest_framework',
     'apps.wallet',
 ]
 
@@ -141,3 +141,6 @@ STATICFILES_DIRS = [
 ]
 
 STATIC_ROOT = '/opt/belvo_files/static'
+
+# Django Rest Framework
+REST_FRAMEWORK = {}
