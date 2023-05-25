@@ -16,7 +16,7 @@ def test_delete_transactions(api_client, sample_transactions_models):
     # delete each transaction on database one by one
     for transaction_to_delete in transactions_to_delete:
         # remove existent object of database from api
-        response = api_client.delete(f'/transaction/{transaction_to_delete["reference"]}')
+        response = api_client.delete(f'/transactions/{transaction_to_delete["reference"]}/')
         assert response.status_code == status.HTTP_200_OK
 
         # decrease counter and check length in db

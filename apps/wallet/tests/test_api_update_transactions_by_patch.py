@@ -31,7 +31,7 @@ def test_update_transactions_by_patch(api_client, sample_transactions_models):
                    'category': 'updated_category_by_patch'}
 
         # get existent object of database from api
-        response = api_client.patch(f'/transaction/{transaction_to_get["reference"]}', payload)
+        response = api_client.patch(f'/transactions/{transaction_to_get["reference"]}/', payload)
 
         # check returned payload with updated data
         assert response.status_code == status.HTTP_200_OK

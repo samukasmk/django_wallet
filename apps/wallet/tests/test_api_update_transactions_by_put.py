@@ -30,11 +30,11 @@ def test_update_transactions_by_put(api_client, sample_transactions_models):
         transaction_to_get['category'] = 'updated_category_by_put'
 
         # get existent object of database from api
-        response = api_client.put(f'/transaction/{transaction_to_get["reference"]}', transaction_to_get)
+        response = api_client.put(f'/transactions/{transaction_to_get["reference"]}/', transaction_to_get)
 
         # check returned payload with updated data
         assert response.status_code == status.HTTP_200_OK
-        assert response.data == transaction_to_get
+        assert dict(response.data) == transaction_to_get
 
         # check update on database
         assert FinancialTransaction.objects.get(

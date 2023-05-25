@@ -1,7 +1,7 @@
 import pytest
+from datetime import datetime
 from model_bakery import baker
 from rest_framework.test import APIClient
-from apps.wallet.models import FinancialTransaction
 
 
 @pytest.fixture(scope="function")
@@ -80,14 +80,10 @@ def sample_summary_user_transactions_by_category():
 
 def normalize_dict_to_model(transaction_dict):
     """ Normalize dict object of a transaction to expected data in database """
-    # normalizing type code
-    if transaction_dict['type'] == 'inflow':
-        transaction_dict['type'] = FinancialTransaction.TransactionType.inflow
-    elif transaction_dict['type'] == 'outflow':
-        transaction_dict['type'] = FinancialTransaction.TransactionType.outflow
-
     # normalizing amount value
-    transaction_dict['amount'] = float(transaction_dict['amount'])
+    transaction_dict.update(
+        {'amount': float(transaction_dict['amount']),
+         'date': datetime.strptime(transaction_dict['date'], '%Y-%m-%d').date()})
 
     return transaction_dict
 

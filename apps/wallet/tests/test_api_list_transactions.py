@@ -15,4 +15,4 @@ def test_list_transactions(api_client, sample_transactions_models):
     # get existent objects of database from api
     response = api_client.get('/transactions/')
     assert response.status_code == status.HTTP_200_OK
-    assert response.data == transactions_to_get
+    assert [dict(i) for i in response.data] == transactions_to_get
