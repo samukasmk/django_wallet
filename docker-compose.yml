@@ -57,6 +57,8 @@ services:
       - DEBUG=FALSE
     volumes:
       - .:/opt/belvo_wallet
+      - belvo_static_volume:/opt/belvo_files/static
+      - belvo_media_volume:/opt/belvo_files/media
     depends_on:
       - postgres
     networks:

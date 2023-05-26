@@ -1,7 +1,7 @@
 import pytest
+from datetime import datetime
 from model_bakery import baker
 from rest_framework.test import APIClient
-from apps.wallet.models import FinancialTransaction
 
 
 @pytest.fixture(scope="function")
@@ -53,7 +53,7 @@ def sample_transactions_data():
              "user_email": "janedoe@email.com"}]
 
 
-def sample_summary_all_transactions_by_user_email():
+def sample_expected_payload_summary_by_user_email():
     """ Sample data of valid summary of total inflow and outflow for each user """
 
     return [{"user_email": "janedoe@email.com",
@@ -64,8 +64,8 @@ def sample_summary_all_transactions_by_user_email():
              "total_outflow": "-51.13"}]
 
 
-def sample_summary_user_transactions_by_category():
-    """ Sample data of valid summary of each user transactions by inflow and outflow categories """
+def sample_expected_payload_summary_by_category():
+    """ Sample data REST API response of valid summary of each user transactions by inflow and outflow categories """
 
     return [['janedoe@email.com',
              {"inflow": {"salary": "2500.72",
@@ -73,27 +73,38 @@ def sample_summary_user_transactions_by_category():
               "outflow": {"groceries": "-51.13",
                           "rent": "-560.00",
                           "transfer": "-150.72"}}],
+
             ['johndoe@email.com',
              {"inflow": {},
               "outflow": {"other": "-51.13"}}]]
 
 
+def sample_expected_queryset_summary_by_category():
+    """ Sample data of QuerySet result with summary of each user transactions by inflow and outflow categories """
+
+    return [['janedoe@email.com',
+             [{'type': 'inflow', 'category': 'salary', 'total': 2500.72},
+              {'type': 'inflow', 'category': 'savings', 'total': 150.72},
+              {'type': 'outflow', 'category': 'groceries', 'total': -51.13},
+              {'type': 'outflow', 'category': 'rent', 'total': -560.0},
+              {'type': 'outflow', 'category': 'transfer', 'total': -150.72}]],
+
+            ['johndoe@email.com',
+             [{'type': 'outflow', 'category': 'other', 'total': -51.13}]]]
+
+
 def normalize_dict_to_model(transaction_dict):
     """ Normalize dict object of a transaction to expected data in database """
-    # normalizing type code
-    if transaction_dict['type'] == 'inflow':
-        transaction_dict['type'] = FinancialTransaction.TransactionType.inflow
-    elif transaction_dict['type'] == 'outflow':
-        transaction_dict['type'] = FinancialTransaction.TransactionType.outflow
-
     # normalizing amount value
-    transaction_dict['amount'] = float(transaction_dict['amount'])
+    transaction_dict.update(
+        {'amount': float(transaction_dict['amount']),
+         'date': datetime.strptime(transaction_dict['date'], '%Y-%m-%d').date()})
 
     return transaction_dict
 
 
 @pytest.fixture(scope="function")
-def sample_transactions_models():
+def mock_db_transactions():
     return [baker.make('FinancialTransaction',
                        **normalize_dict_to_model(transaction_to_create))
             for transaction_to_create in sample_transactions_data()]
