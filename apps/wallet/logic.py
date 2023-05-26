@@ -3,7 +3,8 @@ from django.db.models import Sum, Q
 from apps.wallet.models import FinancialTransaction
 
 
-def summarize_transactions_by_user_email() -> Sequence[FinancialTransaction]:
+def summarize_all_transactions_by_user_email() -> Sequence[FinancialTransaction]:
+    """ Aggregate total inflow and outflow by user email for all users """
     return FinancialTransaction.objects.values(
         'user_email').annotate(total_inflow=Sum('amount',
                                                 filter=Q(type='inflow'),
