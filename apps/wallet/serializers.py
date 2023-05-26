@@ -5,22 +5,17 @@ from apps.wallet.validators import validate_amount_flow_value
 from apps.wallet.exceptions import InflowTransactionHasANegativeAmount, OutflowTransactionHasAPositiveAmount
 
 
+class FloatFieldTwoDecimalPoints(serializers.Field):
+    def to_representation(self, value):
+        return '{:.2f}'.format(value)
+
+
 class FinancialTransactionSerializer(serializers.ModelSerializer):
+    amount = FloatFieldTwoDecimalPoints()
+
     class Meta:
         model = FinancialTransaction
         fields = ['reference', 'date', 'amount', 'type', 'category', 'user_email']
-
-    def to_representation(self, instance: FinancialTransaction) -> dict:
-        """ Normalize representation of data for users like asked on test description """
-        ret = super().to_representation(instance)
-
-        # normalize type int to str
-        ret['type'] = instance.get_type_display().lower()
-
-        # normalize amount to str
-        ret['amount'] = '{:.2f}'.format(ret['amount'])
-
-        return ret
 
     def validate(self, data: dict) -> dict:
         """ Validate input values """
@@ -41,6 +36,12 @@ class FinancialTransactionSerializer(serializers.ModelSerializer):
         return super().validate(data)
 
 
+class SummaryAllTransactionsByUser(serializers.Serializer):
+    user_email = serializers.EmailField()
+    total_inflow = FloatFieldTwoDecimalPoints()
+    total_outflow = FloatFieldTwoDecimalPoints()
+
+
 class SummaryUserTransactionByCategory(serializers.Serializer):
     inflow = serializers.DictField()
     outflow = serializers.DictField()
@@ -52,8 +53,7 @@ class SummaryUserTransactionByCategory(serializers.Serializer):
         for summary_category in queryset_result:
             flow_type = summary_category['type']
             category_name = summary_category['category']
-            total_category = '{:.2f}'.format(summary_category['total'])
-
+            total_category = summary_category['total']
             response_dict[flow_type][category_name] = total_category
 
         return response_dict
