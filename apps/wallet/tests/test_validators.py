@@ -40,11 +40,11 @@ def test_valid_transaction_types() -> None:
     """
     Test valid values for transaction types
     """
-    assert validate_flow_type(transaction_type='inflow')
-    assert validate_flow_type(transaction_type='outflow')
+    assert validate_flow_type(transaction_type='inflow') is None
+    assert validate_flow_type(transaction_type='outflow') is None
 
 
-def test_valid_transaction_types() -> None:
+def test_invalid_transaction_types() -> None:
     """
     Test invalid values for transaction types
     """
