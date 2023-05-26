@@ -94,9 +94,11 @@ def test_creation_bulk_invalid_transactions(api_client: APIClient) -> None:
     assert response.status_code == status.HTTP_400_BAD_REQUEST
 
     # check error response
-    assert 'amount' in response.data
-    assert len(response.data['amount'])
-    assert 'transactions can not have' in str(response.data['amount'][0])
+    error_responses = [error_detail['amount']
+                       for error_detail in response.data
+                       if 'amount' in error_detail.keys()]
+    assert len(error_responses)
+    assert 'transactions can not have' in str(error_responses[0])
 
     # check objects creation on db
     assert FinancialTransaction.objects.all().count() == 0

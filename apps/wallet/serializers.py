@@ -6,7 +6,15 @@ from apps.wallet.exceptions import InflowTransactionHasANegativeAmount, OutflowT
 
 
 class FloatFieldTwoDecimalPoints(serializers.Field):
+    def to_internal_value(self, data):
+        """ Convert str to float value to save on db"""
+        try:
+            return float(data)
+        except (TypeError, ValueError):
+            raise serializers.ValidationError("Invalid float value")
+
     def to_representation(self, value):
+        """ Convert float value to str with two decimal points to export """
         return '{:.2f}'.format(value)
 
 
