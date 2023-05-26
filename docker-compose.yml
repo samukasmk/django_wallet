@@ -1,0 +1,75 @@
+version: '3.9'
+
+services:
+  django:
+    image: belvo_wallet
+    build:
+      context: .
+    command: gunicorn core.wsgi:application --bind 0.0.0.0:5000
+    environment:
+      - DJANGO_SETTINGS_MODULE=core.settings
+      - DATABASE_HOST=postgres
+      - DEBUG=FALSE
+    volumes:
+      - .:/opt/belvo_wallet
+      - belvo_static_volume:/opt/belvo_files/static
+      - belvo_media_volume:/opt/belvo_files/media
+    restart: on-failure
+    depends_on:
+      - postgres
+    ports:
+      - 8000:8000
+    networks:
+      - local
+
+  postgres:
+    image: postgres
+    ports:
+      - "5432:5432"
+    volumes:
+      - belvo_postgres:/var/lib/postgresql/data
+    restart: on-failure
+    environment:
+      - POSTGRES_USER=belvo_wallet
+      - POSTGRES_PASSWORD=P4s5W0RD
+      - POSTGRES_DB=belvo_wallet
+    networks:
+      - local
+
+  nginx:
+    image: nginx:stable
+    volumes:
+      - ./.nginx/nginx.dev.conf:/etc/nginx/conf.d/default.conf
+      - belvo_static_volume:/opt/belvo_files/static
+      - belvo_media_volume:/opt/belvo_files/media
+    restart: on-failure
+    ports:
+      - 80:80
+    networks:
+      - local
+
+  build-environment:
+    image: belvo_wallet
+    command: make build-environment
+    environment:
+      - DJANGO_SETTINGS_MODULE=core.settings
+      - DATABASE_HOST=postgres
+      - DEBUG=FALSE
+    volumes:
+      - .:/opt/belvo_wallet
+      - belvo_static_volume:/opt/belvo_files/static
+      - belvo_media_volume:/opt/belvo_files/media
+    depends_on:
+      - postgres
+    networks:
+      - local
+
+
+volumes:
+  belvo_postgres:
+  belvo_static_volume:
+  belvo_media_volume:
+
+networks:
+  local:
+    driver: bridge
