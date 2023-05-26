@@ -13,7 +13,7 @@ def test_creation_bulk_valid_transactions(api_client: APIClient) -> None:
     transactions_to_create = sample_transactions_data()
 
     # make api request
-    response = api_client.post('/transactions/', transactions_to_create)
+    response = api_client.post('/transactions', transactions_to_create)
 
     # check status code
     assert response.status_code == status.HTTP_201_CREATED
@@ -46,7 +46,7 @@ def test_creation_bulk_transactions_invalid_signals(api_client: APIClient) -> No
     transactions_to_create[-1]['amount'] = str(-float(transactions_to_create[-1]['amount']))
 
     # make api request
-    response = api_client.post('/transactions/', transactions_to_create)
+    response = api_client.post('/transactions', transactions_to_create)
 
     # check status code
     assert response.status_code == status.HTTP_400_BAD_REQUEST
@@ -73,7 +73,7 @@ def test_creation_bulk_transactions_invalid_type(api_client: APIClient) -> None:
     transactions_to_create[-1]['type'] = 'invalid_type'
 
     # make api request
-    response = api_client.post('/transactions/', transactions_to_create)
+    response = api_client.post('/transactions', transactions_to_create)
 
     # check status code
     assert response.status_code == status.HTTP_400_BAD_REQUEST
@@ -104,7 +104,7 @@ def test_creation_bulk_transactions_missing_required_fields(api_client: APIClien
     transactions_to_create[transaction_position_in_bulk].pop(required_field, None)
 
     # make api request
-    response = api_client.post('/transactions/', transactions_to_create)
+    response = api_client.post('/transactions', transactions_to_create)
 
     # check status code
     assert response.status_code == status.HTTP_400_BAD_REQUEST

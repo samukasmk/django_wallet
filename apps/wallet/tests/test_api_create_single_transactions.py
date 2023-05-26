@@ -12,7 +12,7 @@ def test_creation_single_valid_transactions(api_client: APIClient, transaction_t
     Test endpoint to create transactions with valid data of each transaction
     """
     # make api request
-    response = api_client.post('/transactions/', transaction_to_create)
+    response = api_client.post('/transactions', transaction_to_create)
 
     # check status code
     assert response.status_code == status.HTTP_201_CREATED
@@ -41,7 +41,7 @@ def test_creation_single_transactions_invalid_signals(api_client: APIClient, tra
     transaction_to_create['amount'] = str(-float(transaction_to_create['amount']))
 
     # make api request
-    response = api_client.post('/transactions/', transaction_to_create)
+    response = api_client.post('/transactions', transaction_to_create)
 
     # check status code
     assert response.status_code == status.HTTP_400_BAD_REQUEST
@@ -65,7 +65,7 @@ def test_creation_single_transactions_invalid_type(api_client: APIClient, transa
     transaction_to_create['type'] = 'invalid'
 
     # make api request
-    response = api_client.post('/transactions/', transaction_to_create)
+    response = api_client.post('/transactions', transaction_to_create)
 
     # check status code
     assert response.status_code == status.HTTP_400_BAD_REQUEST
@@ -92,7 +92,7 @@ def test_creation_single_transactions_missing_required_fields(api_client: APICli
     transaction_to_create.pop(required_field, None)
 
     # make api request
-    response = api_client.post('/transactions/', transaction_to_create)
+    response = api_client.post('/transactions', transaction_to_create)
 
     # check status code
     assert response.status_code == status.HTTP_400_BAD_REQUEST
