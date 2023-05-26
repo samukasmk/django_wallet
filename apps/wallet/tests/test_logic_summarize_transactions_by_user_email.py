@@ -1,12 +1,12 @@
 import pytest
-from typing import Sequence
+from typing import List, Sequence
 from apps.wallet.models import FinancialTransaction
 from apps.wallet.logic import summarize_all_transactions_by_user_email, summarize_user_transactions_by_category
 from apps.wallet.tests.conftest import sample_expected_queryset_summary_by_category
 
 
 @pytest.mark.django_db
-def test_summarize_all_transactions_by_user_email(mock_db_transactions) -> None:
+def test_summarize_all_transactions_by_user_email(mock_db_transactions: Sequence[FinancialTransaction]) -> None:
     """ Test logic function of aggregation by user email """
 
     summarized_queryset = summarize_all_transactions_by_user_email()
@@ -23,9 +23,9 @@ def test_summarize_all_transactions_by_user_email(mock_db_transactions) -> None:
                          sample_expected_queryset_summary_by_category())
 def test_summarize_user_transactions_by_category(
         user_email: str,
-        expected_queryset_result: Sequence[FinancialTransaction],
-        mock_db_transactions) -> None:
-    """ Test logic function to  """
+        expected_queryset_result: List[dict],
+        mock_db_transactions: Sequence[FinancialTransaction]) -> None:
+    """ Test logic function of aggregation by category """
 
     summarized_queryset = summarize_user_transactions_by_category(user_email)
     assert list(summarized_queryset) == expected_queryset_result

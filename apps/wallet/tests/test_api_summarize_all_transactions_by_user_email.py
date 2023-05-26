@@ -8,7 +8,7 @@ from apps.wallet.tests.conftest import sample_transactions_data, sample_expected
 
 @pytest.mark.django_db
 def test_summarize_all_transactions_by_user(api_client: APIClient,
-                                            mock_db_transactions) -> None:
+                                            mock_db_transactions: Sequence[FinancialTransaction]) -> None:
     """ Test endpoint to summarize all transactions by user """
     # check models existence in db
     assert FinancialTransaction.objects.all().count() == len(sample_transactions_data())

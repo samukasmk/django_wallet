@@ -8,7 +8,7 @@ from apps.wallet.tests.conftest import sample_transactions_data
 
 @pytest.mark.django_db
 def test_delete_transactions(api_client: APIClient,
-                             mock_db_transactions) -> None:
+                             mock_db_transactions: Sequence[FinancialTransaction]) -> None:
     """ Test endpoint to delete transactions """
     transactions_to_delete = sample_transactions_data()
     models_count = len(transactions_to_delete)

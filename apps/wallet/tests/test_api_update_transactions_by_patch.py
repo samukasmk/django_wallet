@@ -8,7 +8,7 @@ from apps.wallet.tests.conftest import sample_transactions_data
 
 @pytest.mark.django_db
 def test_update_transactions_by_patch(api_client: APIClient,
-                                      mock_db_transactions) -> None:
+                                      mock_db_transactions: Sequence[FinancialTransaction]) -> None:
     """ Test endpoint to update some specific information in a transaction """
     transactions_to_get = sample_transactions_data()
 
