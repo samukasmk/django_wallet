@@ -22,7 +22,7 @@ from rest_framework import routers
 from apps.wallet.viewsets import FinancialTransactionsViewSet
 
 # wallet routes
-router = routers.DefaultRouter()
+router = routers.DefaultRouter(trailing_slash=False)
 router.register(r'transactions', FinancialTransactionsViewSet)
 
 urlpatterns = [

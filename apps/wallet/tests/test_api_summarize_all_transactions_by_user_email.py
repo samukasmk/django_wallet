@@ -16,7 +16,7 @@ def test_summarize_all_transactions_by_user(api_client: APIClient,
     assert FinancialTransaction.objects.all().count() == len(sample_transactions_data())
 
     # get existent objects of database from api
-    response = api_client.get('/transactions/?group_by=type')
+    response = api_client.get('/transactions?group_by=type')
     assert response.status_code == status.HTTP_200_OK
 
     # assert response
