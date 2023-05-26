@@ -63,7 +63,7 @@ def test_creation_bulk_valid_transactions(api_client: APIClient) -> None:
 
 @pytest.mark.django_db
 @pytest.mark.parametrize('transaction_to_create', sample_transactions_data())
-def test_creation_single_invalid_transactions(api_client: APIClient, transaction_to_create: dict) -> None:
+def test_creation_single_transactions_invalid_signals(api_client: APIClient, transaction_to_create: dict) -> None:
     """
     Test endpoint to create transactions with invalid amount values of each transaction
     """
@@ -86,7 +86,7 @@ def test_creation_single_invalid_transactions(api_client: APIClient, transaction
 
 
 @pytest.mark.django_db
-def test_creation_bulk_invalid_transactions(api_client: APIClient) -> None:
+def test_creation_bulk_transactions_invalid_signals(api_client: APIClient) -> None:
     """
     Test endpoint to create transactions with invalid amount values of many transactions
     """
@@ -107,6 +107,115 @@ def test_creation_bulk_invalid_transactions(api_client: APIClient) -> None:
                        if 'amount' in error_detail.keys()]
     assert len(error_responses)
     assert 'transactions can not have' in str(error_responses[0])
+
+    # check objects creation on db
+    assert FinancialTransaction.objects.all().count() == 0
+
+
+@pytest.mark.django_db
+@pytest.mark.parametrize('transaction_to_create', sample_transactions_data())
+def test_creation_single_transactions_invalid_type(api_client: APIClient, transaction_to_create: dict) -> None:
+    """
+    Test endpoint to create specific transaction with invalid transaction type
+    """
+    # change amount value for invalid signal for transaction type
+    transaction_to_create['type'] = 'invalid'
+
+    # make api request
+    response = api_client.post('/transactions/', transaction_to_create)
+
+    # check status code
+    assert response.status_code == status.HTTP_400_BAD_REQUEST
+
+    # check error response
+    assert 'type' in response.data
+    assert len(response.data['type'])
+    assert 'is not a valid choice' in str(response.data['type'][0])
+
+    # check objects creation on db
+    assert FinancialTransaction.objects.all().count() == 0
+
+
+@pytest.mark.django_db
+def test_creation_bulk_transactions_invalid_type(api_client: APIClient) -> None:
+    """
+    Test endpoint to create many transactions with one invalid transaction type
+    """
+    transactions_to_create = sample_transactions_data()
+
+    # change amount value for invalid signal for transaction type
+    transactions_to_create[-1]['type'] = 'invalid_type'
+
+    # make api request
+    response = api_client.post('/transactions/', transactions_to_create)
+
+    # check status code
+    assert response.status_code == status.HTTP_400_BAD_REQUEST
+
+    # check error response
+    error_responses = [error_detail['type']
+                       for error_detail in response.data
+                       if 'type' in error_detail.keys()]
+    assert len(error_responses)
+    assert 'is not a valid choice' in str(error_responses[0])
+
+    # check objects creation on db
+    assert FinancialTransaction.objects.all().count() == 0
+
+
+@pytest.mark.django_db
+@pytest.mark.parametrize('transaction_to_create', sample_transactions_data())
+@pytest.mark.parametrize('required_field', ['reference', 'date', 'amount', 'type', 'category', 'user_email'])
+def test_creation_single_transactions_missing_required_fields(api_client: APIClient,
+                                                              transaction_to_create: dict,
+                                                              required_field: str) -> None:
+    """
+    Test endpoint to create specific transaction with invalid transaction type
+    """
+    # remove required field
+    transaction_to_create.pop(required_field, None)
+
+    # make api request
+    response = api_client.post('/transactions/', transaction_to_create)
+
+    # check status code
+    assert response.status_code == status.HTTP_400_BAD_REQUEST
+
+    # check error response
+    assert required_field in response.data
+    assert len(response.data[required_field])
+    assert 'This field is required' in str(response.data[required_field][0])
+
+    # check objects creation on db
+    assert FinancialTransaction.objects.all().count() == 0
+
+
+@pytest.mark.django_db
+@pytest.mark.parametrize('required_field', ['reference', 'date', 'amount', 'type', 'category', 'user_email'])
+@pytest.mark.parametrize('transaction_position_in_bulk', list(range(len(sample_transactions_data()))))
+def test_creation_bulk_transactions_missing_required_fields(api_client: APIClient,
+                                                            required_field: str,
+                                                            transaction_position_in_bulk: int) -> None:
+    """
+    Test endpoint to create many transactions with one invalid transaction type
+    """
+    transactions_to_create = sample_transactions_data()
+
+    # change amount value for invalid signal for transaction type
+    transactions_to_create[transaction_position_in_bulk].pop(required_field, None)
+
+    # make api request
+    response = api_client.post('/transactions/', transactions_to_create)
+
+    # check status code
+    assert response.status_code == status.HTTP_400_BAD_REQUEST
+
+    # check error response
+    error_responses = [error_detail[required_field]
+                       for error_detail in response.data
+                       if required_field in error_detail.keys()]
+    assert len(error_responses)
+    assert 'This field is required' in str(error_responses[0])
 
     # check objects creation on db
     assert FinancialTransaction.objects.all().count() == 0
