@@ -8,7 +8,9 @@ from apps.wallet.tests.conftest import sample_transactions_data, normalize_dict_
 @pytest.mark.django_db
 @pytest.mark.parametrize('transaction_to_create', sample_transactions_data())
 def test_creation_single_valid_transactions(api_client: APIClient, transaction_to_create: dict) -> None:
-    """ Test endpoint to create transactions with valid data of each transaction """
+    """
+    Test endpoint to create transactions with valid data of each transaction
+    """
     # make api request
     response = api_client.post('/transactions/', transaction_to_create)
 
@@ -31,7 +33,9 @@ def test_creation_single_valid_transactions(api_client: APIClient, transaction_t
 
 @pytest.mark.django_db
 def test_creation_bulk_valid_transactions(api_client: APIClient) -> None:
-    """ Test endpoint to create transactions with valid data of many transactions """
+    """
+    Test endpoint to create transactions with valid data of many transactions
+    """
     transactions_to_create = sample_transactions_data()
 
     # make api request
@@ -60,7 +64,9 @@ def test_creation_bulk_valid_transactions(api_client: APIClient) -> None:
 @pytest.mark.django_db
 @pytest.mark.parametrize('transaction_to_create', sample_transactions_data())
 def test_creation_single_invalid_transactions(api_client: APIClient, transaction_to_create: dict) -> None:
-    """ Test endpoint to create transactions with invalid amount values of each transaction """
+    """
+    Test endpoint to create transactions with invalid amount values of each transaction
+    """
     # change amount value for invalid signal for transaction type
     transaction_to_create['amount'] = str(-float(transaction_to_create['amount']))
 
@@ -81,7 +87,9 @@ def test_creation_single_invalid_transactions(api_client: APIClient, transaction
 
 @pytest.mark.django_db
 def test_creation_bulk_invalid_transactions(api_client: APIClient) -> None:
-    """ Test endpoint to create transactions with invalid amount values of many transactions """
+    """
+    Test endpoint to create transactions with invalid amount values of many transactions
+    """
     transactions_to_create = sample_transactions_data()
 
     # change amount value for invalid signal for transaction type

@@ -9,7 +9,9 @@ from apps.wallet.tests.conftest import sample_transactions_data
 @pytest.mark.django_db
 def test_get_transactions(api_client: APIClient,
                           mock_db_transactions: Sequence[FinancialTransaction]) -> None:
-    """ Test endpoint to get a specific transaction """
+    """
+    Test endpoint to get a specific transaction
+    """
     transactions_to_get = sample_transactions_data()
 
     # check models existence in db

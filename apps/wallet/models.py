@@ -1,10 +1,5 @@
 from django.db import models
-from apps.wallet.validators import validate_amount_flow_value
-
-
-class TransactionType(models.TextChoices):
-    INFLOW = 'inflow', 'inflow'
-    OUTFLOW = 'outflow', 'outflow'
+from apps.wallet.validators import TransactionType, validate_flow_type, validate_amount_signal_for_type
 
 
 class FinancialTransaction(models.Model):
@@ -16,12 +11,17 @@ class FinancialTransaction(models.Model):
     user_email = models.EmailField()
 
     def save(self, *args, **kwargs) -> None:
-        validate_amount_flow_value(transaction_type=self.type,
-                                   transaction_amount=self.amount)
+        """
+        Data validation before to saving on db
+        """
+        validate_flow_type(transaction_type=self.type)
+        validate_amount_signal_for_type(transaction_type=self.type, transaction_amount=self.amount)
         return super().save(*args, **kwargs)
 
     def to_dict(self) -> dict:
-        """ Format to dict normalizing fields response as str """
+        """
+        Create new dict object from this model instance
+        """
         return {'reference': self.reference,
                 'date': self.date.strftime('%Y-%m-%d'),
                 'amount': '{:.2f}'.format(self.amount),

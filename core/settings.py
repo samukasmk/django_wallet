@@ -144,3 +144,7 @@ STATIC_ROOT = '/opt/belvo_files/static'
 
 # Django Rest Framework
 REST_FRAMEWORK = {}
+
+# Email regex pattern to use in URLs
+HOSTNAME_REGEX = r'[a-zA-Z0-9\_\-+\.]+'
+EMAIL_REGEX = rf'{HOSTNAME_REGEX}@{HOSTNAME_REGEX}\.{HOSTNAME_REGEX}'

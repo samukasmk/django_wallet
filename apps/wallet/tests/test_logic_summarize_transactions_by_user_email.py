@@ -7,8 +7,9 @@ from apps.wallet.tests.conftest import sample_expected_queryset_summary_by_categ
 
 @pytest.mark.django_db
 def test_summarize_all_transactions_by_user_email(mock_db_transactions: Sequence[FinancialTransaction]) -> None:
-    """ Test logic function of aggregation by user email """
-
+    """
+    Test logic function of aggregation by user email
+    """
     summarized_queryset = summarize_all_transactions_by_user_email()
     assert list(summarized_queryset) == [{'user_email': 'janedoe@email.com',
                                           'total_inflow': 2651.4399999999996,
@@ -25,7 +26,8 @@ def test_summarize_user_transactions_by_category(
         user_email: str,
         expected_queryset_result: List[dict],
         mock_db_transactions: Sequence[FinancialTransaction]) -> None:
-    """ Test logic function of aggregation by category """
-
+    """
+    Test logic function of aggregation by category
+    """
     summarized_queryset = summarize_user_transactions_by_category(user_email)
     assert list(summarized_queryset) == expected_queryset_result
