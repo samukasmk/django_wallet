@@ -5,7 +5,7 @@ from datetime import date
 
 
 @pytest.mark.django_db
-def test_create_expected_inflow_positive_amount():
+def test_create_expected_inflow_positive_amount() -> None:
     from apps.wallet.models import FinancialTransaction
     assert FinancialTransaction.objects.all().count() == 0
     FinancialTransaction.objects.create(reference='000001',
@@ -25,7 +25,7 @@ def test_create_expected_inflow_positive_amount():
 
 
 @pytest.mark.django_db
-def test_create_expected_outflow_negative_amount():
+def test_create_expected_outflow_negative_amount() -> None:
     assert FinancialTransaction.objects.all().count() == 0
     FinancialTransaction.objects.create(reference='000002',
                                         date='2021-05-02',
@@ -44,7 +44,7 @@ def test_create_expected_outflow_negative_amount():
 
 
 @pytest.mark.django_db
-def test_create_unexpected_inflow_negative_amount():
+def test_create_unexpected_inflow_negative_amount() -> None:
     assert FinancialTransaction.objects.all().count() == 0
     with pytest.raises(InflowTransactionHasANegativeAmount):
         FinancialTransaction.objects.create(reference='000003',
@@ -57,7 +57,7 @@ def test_create_unexpected_inflow_negative_amount():
 
 
 @pytest.mark.django_db
-def test_create_unexpected_outflow_positive_amount():
+def test_create_unexpected_outflow_positive_amount() -> None:
     assert FinancialTransaction.objects.all().count() == 0
     with pytest.raises(OutflowTransactionHasAPositiveAmount):
         FinancialTransaction.objects.create(reference='000004',

@@ -1,11 +1,14 @@
 import pytest
+from typing import Sequence
 from rest_framework import status
+from rest_framework.test import APIClient
 from apps.wallet.models import FinancialTransaction
 from apps.wallet.tests.conftest import sample_transactions_data
 
 
 @pytest.mark.django_db
-def test_delete_transactions(api_client, sample_transactions_models):
+def test_delete_transactions(api_client: APIClient,
+                             sample_transactions_models: Sequence[FinancialTransaction]) -> None:
     """ Test endpoint to delete transactions """
     transactions_to_delete = sample_transactions_data()
     models_count = len(transactions_to_delete)
