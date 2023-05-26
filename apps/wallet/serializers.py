@@ -1,3 +1,4 @@
+from typing import Sequence
 from rest_framework import serializers
 from apps.wallet.models import FinancialTransaction
 from apps.wallet.validators import validate_amount_flow_value
@@ -38,3 +39,21 @@ class FinancialTransactionSerializer(serializers.ModelSerializer):
 
         # call other validations of inheritance
         return super().validate(data)
+
+
+class SummaryUserTransactionByCategory(serializers.Serializer):
+    inflow = serializers.DictField()
+    outflow = serializers.DictField()
+
+    def to_representation(self, queryset_result: Sequence[FinancialTransaction]) -> dict:
+        """ Format QuerySet result into json response """
+
+        response_dict = {'inflow': {}, 'outflow': {}}
+        for summary_category in queryset_result:
+            flow_type = summary_category['type']
+            category_name = summary_category['category']
+            total_category = '{:.2f}'.format(summary_category['total'])
+
+            response_dict[flow_type][category_name] = total_category
+
+        return response_dict

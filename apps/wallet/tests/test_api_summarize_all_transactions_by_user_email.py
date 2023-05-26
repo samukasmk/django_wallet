@@ -3,12 +3,12 @@ from typing import Sequence
 from rest_framework import status
 from rest_framework.test import APIClient
 from apps.wallet.models import FinancialTransaction
-from apps.wallet.tests.conftest import sample_transactions_data, sample_summary_all_transactions_by_user_email
+from apps.wallet.tests.conftest import sample_transactions_data, sample_expected_payload_summary_by_user_email
 
 
 @pytest.mark.django_db
 def test_summarize_all_transactions_by_user(api_client: APIClient,
-                                            sample_transactions_models: Sequence[FinancialTransaction]) -> None:
+                                            mock_db_transactions) -> None:
     """ Test endpoint to summarize all transactions by user """
     # check models existence in db
     assert FinancialTransaction.objects.all().count() == len(sample_transactions_data())
@@ -18,4 +18,4 @@ def test_summarize_all_transactions_by_user(api_client: APIClient,
     assert response.status_code == status.HTTP_200_OK
 
     # assert response
-    assert response.data == sample_summary_all_transactions_by_user_email()
+    assert response.data == sample_expected_payload_summary_by_user_email()

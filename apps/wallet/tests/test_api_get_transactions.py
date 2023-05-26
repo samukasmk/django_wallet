@@ -8,7 +8,7 @@ from apps.wallet.tests.conftest import sample_transactions_data
 
 @pytest.mark.django_db
 def test_get_transactions(api_client: APIClient,
-                          sample_transactions_models: Sequence[FinancialTransaction]) -> None:
+                          mock_db_transactions) -> None:
     """ Test endpoint to get a specific transaction """
     transactions_to_get = sample_transactions_data()
 

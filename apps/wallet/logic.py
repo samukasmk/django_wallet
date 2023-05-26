@@ -12,3 +12,19 @@ def summarize_all_transactions_by_user_email() -> Sequence[FinancialTransaction]
                                total_outflow=Sum('amount',
                                                  filter=Q(type='outflow'),
                                                  default=0.0))
+
+
+def summarize_user_transactions_by_category(user_email: str) -> Sequence[FinancialTransaction]:
+    """ Aggregate total inflow and outflow by categories for a specific user
+
+        SQL Query:
+            SELECT type, category, SUM(amount) as total
+            FROM wallet_financialtransaction
+            WHERE user_email = 'janedoe@email.com'
+            GROUP BY type, category
+
+    """
+
+    return FinancialTransaction.objects.filter(
+        user_email=user_email
+    ).values('type', 'category').annotate(total=Sum('amount'))

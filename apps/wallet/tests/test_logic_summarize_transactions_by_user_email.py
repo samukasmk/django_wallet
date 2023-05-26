@@ -1,11 +1,12 @@
 import pytest
 from typing import Sequence
 from apps.wallet.models import FinancialTransaction
-from apps.wallet.logic import summarize_all_transactions_by_user_email
+from apps.wallet.logic import summarize_all_transactions_by_user_email, summarize_user_transactions_by_category
+from apps.wallet.tests.conftest import sample_expected_queryset_summary_by_category
 
 
 @pytest.mark.django_db
-def test_summarize_all_transactions_by_user_email(sample_transactions_models: Sequence[FinancialTransaction]) -> None:
+def test_summarize_all_transactions_by_user_email(mock_db_transactions) -> None:
     """ Test logic function of aggregation by user email """
 
     summarized_queryset = summarize_all_transactions_by_user_email()
@@ -18,12 +19,13 @@ def test_summarize_all_transactions_by_user_email(sample_transactions_models: Se
 
 
 @pytest.mark.django_db
-def test_summarize_user_transactions_by_category(sample_transactions_models: Sequence[FinancialTransaction]) -> None:
-    """ Test logic function to aggregate total inflow and outflow by categories for a specific user """
+@pytest.mark.parametrize("user_email, expected_queryset_result",
+                         sample_expected_queryset_summary_by_category())
+def test_summarize_user_transactions_by_category(
+        user_email: str,
+        expected_queryset_result: Sequence[FinancialTransaction],
+        mock_db_transactions) -> None:
+    """ Test logic function to  """
 
-    summarized_queryset = summarize_user_transactions_by_category()
-    assert list(summarized_queryset) == {"inflow": {"salary": 2500.72,
-                                                    "savings": 150.72},
-                                         "outflow": {"groceries": -51.13,
-                                                     "rent": -560.00,
-                                                     "transfer": -150.72}}
+    summarized_queryset = summarize_user_transactions_by_category(user_email)
+    assert list(summarized_queryset) == expected_queryset_result
