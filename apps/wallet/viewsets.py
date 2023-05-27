@@ -9,26 +9,24 @@ from apps.wallet.serializers import (FinancialTransactionSerializer, SummaryAllT
 from apps.wallet.logic import summarize_all_transactions_by_user_email, summarize_user_transactions_by_category
 from rest_framework import mixins
 from drf_spectacular.utils import extend_schema as swagger_schema
-from apps.wallet.schemas import (list_all_transactions_schema, create_transactions_schema,
-                                 summary_user_transactions_by_category_schema)
+from apps.wallet.schemas import (list_many_transactions_schema, create_many_transactions_schema,
+                                 summary_user_transactions_by_category_schema, create_single_transaction_schema,
+                                 retrieve_single_transaction_schema, update_single_transaction_schema)
 
 
 class FinancialTransactionsViewSet(mixins.CreateModelMixin, mixins.ListModelMixin, viewsets.GenericViewSet):
     queryset = FinancialTransaction.objects.all()
     serializer_class = FinancialTransactionSerializer
 
-    @swagger_schema(**create_transactions_schema)
+    @swagger_schema(**create_many_transactions_schema)
     def create(self, request: Request, *args, **kwargs) -> Response:
         """
-        1.) Create multiple financial transactions records in bulk operation
-
-        2.) Create single financial transaction records
+        Create multiple financial transactions records in bulk operation
         """
-        if isinstance(request.data, list):
-            self.serializer_many = True
+        self.serializer_many = True
         return super().create(request, *args, **kwargs)
 
-    @swagger_schema(**list_all_transactions_schema)
+    @swagger_schema(**list_many_transactions_schema)
     def list(self, request: Request, *args, **kwargs) -> Response:
         """
         1.) List all financial transactions records (without query params)
@@ -91,3 +89,32 @@ class FinancialTransactionViewSet(mixins.CreateModelMixin,
     serializer_class = FinancialTransactionSerializer
     lookup_field = 'reference'
     http_method_names = ['get', 'post', 'put', 'delete', 'head']
+
+    @swagger_schema(**create_single_transaction_schema)
+    def create(self, request: Request, *args, **kwargs) -> Response:
+        """
+        Create single financial transaction records
+        """
+        return super().create(request, *args, **kwargs)
+
+    @swagger_schema(**retrieve_single_transaction_schema)
+    def retrieve(self, request: Request, *args, **kwargs) -> Response:
+        """
+        Get single financial transaction records by reference id
+        """
+        return super().retrieve(request, *args, **kwargs)
+
+    @swagger_schema(**update_single_transaction_schema)
+    def update(self, request: Request, *args, **kwargs) -> Response:
+        """
+        Get single financial transaction records by reference id
+
+        Note: the reference field is read-only and it can't be changed by payload.
+        """
+        return super().update(request, *args, **kwargs)
+
+    def destroy(self, request: Request, *args, **kwargs) -> Response:
+        """
+        Delete single financial transaction records by reference id
+        """
+        return super().destroy(request, *args, **kwargs)
