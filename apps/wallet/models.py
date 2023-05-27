@@ -26,8 +26,8 @@ class FinancialTransaction(models.Model):
         Create new dict object from this model instance
         """
         return {'reference': self.reference,
-                'date': self.date.strftime('%Y-%m-%d'),
-                'amount': '{:.2f}'.format(self.amount),
+                'date': str(self.date),
+                'amount': f'{self.amount:.2f}',
                 'type': self.get_type_display().lower(),
                 'category': self.category,
                 'user_email': self.user_email}
