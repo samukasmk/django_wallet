@@ -8,8 +8,8 @@ This project is part of the techincal test performed for Belvo company on positi
 > If you want to install without docker, directly in your machine please read the topic: [Extra: Working in your local machine (without docker)](#extra-working-in-your-local-machine-without-docker)
 
 Before you can execute the installing commands, please ensure these external requirements are already installed:
-- [Docker](https://docs.docker.com/engine/install/ubuntu/)
-- [docker-compose](https://docs.docker.com/compose/install/linux/)
+- [Docker](https://docs.docker.com/engine/install/)
+- [docker-compose](https://docs.docker.com/compose/install/)
 
 
 To run the app on Docker containers, please execute the commands bellow:
