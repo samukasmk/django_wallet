@@ -111,7 +111,7 @@ retrieve_single_transaction_schema = {
                               "user_email": "janedoe@email.com"})]}
 
 update_single_transaction_schema = {
-    'examples': [   
+    'examples': [
         OpenApiExample('Update an inflow transaction record',
                        value={"reference": "000001",
                               "date": "2023-05-27",
