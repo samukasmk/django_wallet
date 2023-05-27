@@ -30,8 +30,18 @@ docker-compose up --build -d
 
 ## Using the REST API
 After `docker-compose` has created the new containers you can access directly by URL: [http://127.0.0.1/transactions/](http://127.0.0.1/transactions/)
-
 from your preferred http client like `chrome browser`, `postman`, `curl`, `python requests` or others.
+
+If you prefer, I've documented the API endpoints with Swagger and OpenAPI 3.
+
+To access you just need to access the root URL of django like:
+[http://127.0.0.1](http://127.0.0.1)
+and the system will redirect to the Swagger url at:
+[http://127.0.0.1/api/docs](http://127.0.0.1/api/docs)
+
+Example:
+
+![.docs/images/swagger-home.png](.docs/images/swagger-home.png) 
 
 ### Get users' transactions
 ```
