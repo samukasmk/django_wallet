@@ -1,5 +1,5 @@
 # belvo_wallet
-A very simple REST API that stores financial transactions made by each user, summarizes spending, and receivables and accounts transaction balances by category. 
+A very simple REST API that stores financial transactions records made by each user, summarizing spending, and receivables, and balances of transactions by category.
 
 This project is part of the technical test performed for Belvo company on the position of Backend Engineer - Mid Level position.
 
