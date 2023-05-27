@@ -29,18 +29,24 @@ docker-compose up --build -d
 ![.docs/gifs/docker-compose-up.gif](.docs/gifs/docker-compose-up.gif) 
 
 ## Using the REST API
-After `docker-compose` has created the new containers you can access them directly by URL: [http://127.0.0.1/transactions/](http://127.0.0.1/transactions/)
+After `docker-compose` has created the new containers you can access by URL and passing the content type of: `application/json`
 
-from your preferred HTTP client like `chrome browser`, `postman`, `curl`, `python requests`, or others.
+Example to access by `curl` tool:
+```shell
+curl -X GET -H 'accept: application/json' http://127.0.0.1/transactions
+```
 
-If you prefer, I've documented the API endpoints with Swagger and OpenAPI 3.
+### Using API by Swagger
 
-To access the API documentation you just need click on root URL of Django project like:
-[http://127.0.0.1](http://127.0.0.1)
-and the system will redirect to the Swagger url at:
-[http://127.0.0.1/api/docs](http://127.0.0.1/api/docs)
+Swagger is a great REST API documentation tool that works with OpenAPI 3 standards.
 
-> But don't forget to create and run the containers with `docker-compose up` command before access the mentioned URLs
+If you prefer I've configured Swagger in this project. 
+
+To access the API documentation you just need click in next URL [http://127.0.0.1](http://127.0.0.1)
+
+and the system will redirect to the Swagger url at: [http://127.0.0.1/api/docs](http://127.0.0.1/api/docs)
+
+> But don't forget to create and run the containers with `docker-compose up` command before access the mentioned URLs.
 
 **Example:**
 
