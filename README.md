@@ -46,20 +46,22 @@ and the system will redirect to the Swagger url at:
 
 ![.docs/images/home/swagger-1-home.png](.docs/images/home/swagger-1-home.png) 
 
+---
+
 As requested in test description, I created 4 endpoint variations of `/transactions` verb to:
-- create many transactions in bulk: `POST /transactions`
+- create many transactions in bulk mode: `POST /transactions`
 - list all existing transactions: `GET /transactions`
-- summarize transactions by value types: `GET /transactions?group_by=type`
+- summarize transactions by total inflows and outflows per user: `GET /transactions?group_by=type`
 - summarize transactions grouped by category: `GET /transactions/{user_email}/summary`
 
 I also created, in addition 4 more new endpoints variations of `/transaction` verb to:
 - create a new single transaction record: `POST /transaction`
-- retrieve a record by reference id: `GET /transaction/{reference}`
-- update fields information: `PUT /transaction/{reference}`
+- retrieve a transaction record by reference id: `GET /transaction/{reference}`
+- update transaction fields information: `PUT /transaction/{reference}`
 - and deleting it: `DELETE /transaction/{reference}`
 
-## Multiple transaction endpoints 
-### Create many transactions in bulk
+## Multiple transactions endpoints 
+### Create many transactions in bulk mode
 ```
 POST /transactions
 ```
@@ -75,7 +77,7 @@ GET /transactions
 
 ![.docs/images/many-transactions/swagger-3-list-all.png](.docs/images/many-transactions/swagger-3-list-all.png)
 
-### Summarize transactions by value types
+### Summarize transactions by total inflows and outflows per user
 ```
 GET /transactions?group_by=type
 ```
@@ -103,7 +105,7 @@ POST /transaction
 
 ![.docs/images/single-transaction/swagger-6-create-single.png](.docs/images/single-transaction/swagger-6-create-single.png)
 
-### Retrieve a record by reference id
+### Retrieve a transaction record by reference id
 ```
 GET /transaction/{reference}
 ```
@@ -112,7 +114,7 @@ GET /transaction/{reference}
 
 ![.docs/images/single-transaction/swagger-7-get-single.png](.docs/images/single-transaction/swagger-7-get-single.png)
 
-### Update fields information
+### Update transaction fields information
 ```
 PUT /transaction/{reference}
 ```
