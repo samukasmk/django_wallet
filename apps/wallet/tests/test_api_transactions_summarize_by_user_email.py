@@ -1,9 +1,12 @@
-import pytest
 from typing import Sequence
+
+import pytest
 from rest_framework import status
 from rest_framework.test import APIClient
+
 from apps.wallet.models import FinancialTransaction
-from apps.wallet.tests.conftest import sample_transactions_data, sample_expected_payload_summary_by_user_email
+from apps.wallet.tests.conftest import (
+    sample_expected_payload_summary_by_user_email, sample_transactions_data)
 
 
 @pytest.mark.django_db

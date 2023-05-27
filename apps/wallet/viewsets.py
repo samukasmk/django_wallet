@@ -1,17 +1,22 @@
 from django.conf import settings
-from rest_framework import viewsets, status
+from drf_spectacular.utils import extend_schema as swagger_schema
+from rest_framework import mixins, status, viewsets
 from rest_framework.decorators import action
 from rest_framework.request import Request
 from rest_framework.response import Response
+
+from apps.wallet.logic import (summarize_all_transactions_by_user_email,
+                               summarize_user_transactions_by_category)
 from apps.wallet.models import FinancialTransaction
-from apps.wallet.serializers import (FinancialTransactionSerializer, SummaryAllTransactionsByUser,
+from apps.wallet.schemas import (create_many_transactions_schema,
+                                 create_single_transaction_schema,
+                                 list_many_transactions_schema,
+                                 retrieve_single_transaction_schema,
+                                 summary_user_transactions_by_category_schema,
+                                 update_single_transaction_schema)
+from apps.wallet.serializers import (FinancialTransactionSerializer,
+                                     SummaryAllTransactionsByUser,
                                      SummaryUserTransactionByCategory)
-from apps.wallet.logic import summarize_all_transactions_by_user_email, summarize_user_transactions_by_category
-from rest_framework import mixins
-from drf_spectacular.utils import extend_schema as swagger_schema
-from apps.wallet.schemas import (list_many_transactions_schema, create_many_transactions_schema,
-                                 summary_user_transactions_by_category_schema, create_single_transaction_schema,
-                                 retrieve_single_transaction_schema, update_single_transaction_schema)
 
 
 class FinancialTransactionsViewSet(mixins.CreateModelMixin, mixins.ListModelMixin, viewsets.GenericViewSet):

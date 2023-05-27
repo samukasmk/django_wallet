@@ -1,7 +1,10 @@
-import pytest
-from apps.wallet.models import FinancialTransaction
-from apps.wallet.exceptions import InflowTransactionHasANegativeAmount, OutflowTransactionHasAPositiveAmount
 from datetime import date
+
+import pytest
+
+from apps.wallet.exceptions import (InflowTransactionHasANegativeAmount,
+                                    OutflowTransactionHasAPositiveAmount)
+from apps.wallet.models import FinancialTransaction
 
 
 @pytest.mark.django_db

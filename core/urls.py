@@ -15,13 +15,14 @@ Including another URLconf
     2. Add a URL to urlpatterns:  path('blog/', include('blog.urls'))
 """
 from django.conf import settings
-from django.urls import path, include
-from django.conf import settings
 from django.conf.urls.static import static
-from rest_framework import routers
-from apps.wallet.viewsets import FinancialTransactionsViewSet, FinancialTransactionViewSet
-from drf_spectacular.views import SpectacularAPIView, SpectacularSwaggerView
+from django.urls import include, path
 from django.views.generic import RedirectView
+from drf_spectacular.views import SpectacularAPIView, SpectacularSwaggerView
+from rest_framework import routers
+
+from apps.wallet.viewsets import (FinancialTransactionsViewSet,
+                                  FinancialTransactionViewSet)
 
 # wallet routes
 router_many_transactions = routers.DefaultRouter(trailing_slash=False)
