@@ -12,7 +12,7 @@ Before you can execute the installing commands, please ensure these external req
 - [docker-compose](https://docs.docker.com/compose/install/)
 
 
-To run the app on Docker containers, please execute the commands bellow:
+To run this app on Docker containers, please execute the commands bellow:
 ```shell
 # clone this repository
 git clone git@github.com:samukasmk/belvo_wallet.git
@@ -25,8 +25,9 @@ docker-compose up --build -d
 ```
 
 ## Using the REST API
-Access the URL from your local:
-[http://127.0.0.1/transactions/](http://127.0.0.1/transactions/)
+After `docker-compose` has created the new containers you can access directly by URL: [http://127.0.0.1/transactions/](http://127.0.0.1/transactions/)
+
+from your preferred http client like `chrome browser`, `postman`, `curl`, `python requests` or others.
 
 ### Get users' transactions
 ```
@@ -126,16 +127,12 @@ GET /transactions/{user_email}/summary
 ```
 
 ## Running unit tests (from docker container)
+Since docker-compose has built with success your image containers
+you can run the `unit tests` directly from `docker-compose` with command: 
+
 ```shell
-docker-compose run --rm pytest
+docker-compose run --rm unittests
 ```
-
-
-
-
-
-
-
 
 
 

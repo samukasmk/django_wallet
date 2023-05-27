@@ -66,7 +66,7 @@ services:
     networks:
       - local
 
-  pytest:
+  unittests:
     image: belvo_wallet_development
     build:
       context: .
@@ -78,7 +78,8 @@ services:
       - DEBUG=TRUE
     volumes:
       - .:/opt/belvo_wallet
-    scale: 0 # disable run in docker-compose up
+    scale: 0 # this parameter disables this service to run on `docker-compose up` command
+             # to run the unittests please execute manually the command: `docker-compose run --rm unittests`
 
 volumes:
   belvo_postgres:
