@@ -34,9 +34,9 @@ class FinancialTransactionsViewSet(mixins.CreateModelMixin, mixins.ListModelMixi
     @swagger_schema(**create_transactions_schema)
     def create(self, request: Request, *args, **kwargs) -> Response:
         """
-        1.) Create single financial transaction records
+        1.) Create multiple financial transactions records in bulk operation
 
-        2.) Create multiple financial transactions records in bulk operation
+        2.) Create single financial transaction records
         """
         if isinstance(request.data, list):
             self.serializer_many = True
