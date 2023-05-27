@@ -4,9 +4,8 @@ A very simple REST API that stores financial transactions made by each user, sum
 This project is part of the techincal test performed for Belvo company on position of Backend Engineer - Mid Level position.
 
 ## Installation
-### Installing with docker containers
-
-> This option is the most indicated when the goal is to run in production mode.
+> This installation mode is the most indicated when the goal is to run in production mode.
+> If you want to install without docker, directly in your machine please read the topic: [Extra: Working in your local machine (without docker)](#extra-working-in-your-local-machine-without-docker)
 
 Before you can execute the installing commands, please ensure these external requirements are already installed:
 - [Docker](https://docs.docker.com/engine/install/ubuntu/)
@@ -23,36 +22,6 @@ cd belvo_wallet
 
 # build and run the apps inside containers
 docker-compose up --build -d
-```
-
-### Installing in your local machine
-> This other option is a very specific implementation to install **(without Docker)** for development purposes like debugging this app in your IDE.
-
-> **If you want to run with Docker and you've installed with previous topic, please ignore these instructions bellow skipping to the next topic.**
-
-To run this Django project in your local machine, execute the commands bellow:
-```shell
-# clone this repository
-git clone https://github.com/samukasmk/belvo_wallet.git
-
-# access new folder
-cd belvo_wallet
-
-# create new virtualenv
-python3 -m venv ./venv
-source ./venv/bin/activate
-
-# install required libraries
-pip install -r requirements.txt
-
-# export the static files
-./manage.py collectstatic
-
-# create the database structure
-./manage.py migrate
-
-# run the webserver
-./manage.py runserver
 ```
 
 ## Using the REST API
@@ -156,8 +125,55 @@ GET /transactions/{user_email}/summary
 }
 ```
 
-## Running unit tests
+## Running unit tests (from docker container)
 ```shell
-pytest .
+docker-compose run --rm pytest
 ```
 
+
+
+
+
+
+
+
+
+
+# Extra: Working in your local machine (without docker)  
+
+## Installing in your local machine
+> This installation mode is a very specific implementation to install **(without Docker)** for development purposes like debugging this app in your IDE.
+> **If you want to run with Docker, please ignore these instructions bellow returning to topic [Installation](#installation).**
+
+To run this Django project in your local machine, execute the commands bellow:
+```shell
+# clone this repository
+git clone https://github.com/samukasmk/belvo_wallet.git
+
+# access new folder
+cd belvo_wallet
+
+# create new virtualenv
+python3 -m venv ./venv
+source ./venv/bin/activate
+
+# install required libraries
+pip install -r requirements.txt
+
+# export the static files
+./manage.py collectstatic
+
+# create the database structure
+./manage.py migrate
+
+# run the webserver
+./manage.py runserver
+```
+
+## Running unit tests (without docker container)
+```shell
+make test
+
+# or your run pytest directly from your IDE like
+pytest .
+```

@@ -2,9 +2,11 @@ version: '3.9'
 
 services:
   django:
-    image: belvo_wallet
+    image: belvo_wallet_production
     build:
       context: .
+      args:
+        INSTALL_LIBS: production
     command: gunicorn core.wsgi:application --bind 0.0.0.0:5000
     environment:
       - DJANGO_SETTINGS_MODULE=core.settings
@@ -64,6 +66,19 @@ services:
     networks:
       - local
 
+  pytest:
+    image: belvo_wallet_development
+    build:
+      context: .
+      args:
+        INSTALL_LIBS: development
+    command: make test
+    environment:
+      - DJANGO_SETTINGS_MODULE=core.testing
+      - DEBUG=TRUE
+    volumes:
+      - .:/opt/belvo_wallet
+    scale: 0 # disable run in docker-compose up
 
 volumes:
   belvo_postgres:
