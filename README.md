@@ -24,7 +24,7 @@ cd belvo_wallet
 docker-compose up --build -d
 ```
 
-**Example:**
+**Docker compose example:**
 
 ![.docs/gifs/docker-compose-up.gif](.docs/gifs/docker-compose-up.gif) 
 
@@ -44,11 +44,9 @@ If you prefer I've configured Swagger in this project.
 
 To access the API documentation you just need click in next URL [http://127.0.0.1](http://127.0.0.1)
 
-and the system will redirect to the Swagger url at: [http://127.0.0.1/api/docs](http://127.0.0.1/api/docs)
+> But don't forget to check if containers are created and running before access Swagger URL
 
-> But don't forget to create and run the containers with `docker-compose up` command before access the mentioned URLs.
-
-**Example:**
+**Swagger example:**
 
 ![.docs/images/home/swagger-1-home.png](.docs/images/home/swagger-1-home.png) 
 
