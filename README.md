@@ -35,10 +35,12 @@ from your preferred HTTP client like `chrome browser`, `postman`, `curl`, `pytho
 
 If you prefer, I've documented the API endpoints with Swagger and OpenAPI 3.
 
-To access you just need to access the root URL of Django like:
+To access the API documentation you just need click on root URL of Django project like:
 [http://127.0.0.1](http://127.0.0.1)
 and the system will redirect to the Swagger url at:
 [http://127.0.0.1/api/docs](http://127.0.0.1/api/docs)
+
+> But don't forget to create and run the containers with `docker-compose up` command before access the mentioned URLs
 
 **Example:**
 
