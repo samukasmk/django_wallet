@@ -51,7 +51,7 @@ services:
       - local
 
   build-environment:
-    image: belvo_wallet
+    image: belvo_wallet_production
     command: make build-environment
     environment:
       - DJANGO_SETTINGS_MODULE=core.settings
@@ -66,7 +66,7 @@ services:
     networks:
       - local
 
-  unittests:
+  unit-tests:
     image: belvo_wallet_development
     build:
       context: .
@@ -79,7 +79,7 @@ services:
     volumes:
       - .:/opt/belvo_wallet
     scale: 0 # this parameter disables this service to run on `docker-compose up` command
-             # to run the unittests please execute manually the command: `docker-compose run --rm unittests`
+             # to run the unit-tests please execute manually the command: `docker-compose run --rm unit-tests`
 
 volumes:
   belvo_postgres:

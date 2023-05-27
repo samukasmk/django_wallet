@@ -15,7 +15,6 @@ from pathlib import Path
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
 BASE_DIR = Path(__file__).resolve().parent.parent
 
-
 # Quick-start development settings - unsuitable for production
 # See https://docs.djangoproject.com/en/4.2/howto/deployment/checklist/
 
@@ -25,7 +24,6 @@ SECRET_KEY = 'django-insecure-7rz$t35j1^r_=45of=nk$td3phq2=j2t!k1b)9&zjmt^*+n=@x
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = os.environ.get('DEBUG', 'FALSE').upper() == 'TRUE'
 ALLOWED_HOSTS = ['.localhost', '127.0.0.1', '[::1]'] if not DEBUG else []
-
 
 # Application definition
 
@@ -37,6 +35,7 @@ INSTALLED_APPS = [
     'django.contrib.messages',
     'django.contrib.staticfiles',
     'rest_framework',
+    'drf_spectacular',
     'apps.wallet',
 ]
 
@@ -73,7 +72,6 @@ TEMPLATES = [
 
 WSGI_APPLICATION = 'core.wsgi.application'
 
-
 # Database
 # https://docs.djangoproject.com/en/4.2/ref/settings/#databases
 
@@ -87,7 +85,6 @@ DATABASES = {
         'PORT': os.environ.get('DATABASE_PORT', 5432),
     }
 }
-
 
 # Password validation
 # https://docs.djangoproject.com/en/4.2/ref/settings/#auth-password-validators
@@ -107,7 +104,6 @@ AUTH_PASSWORD_VALIDATORS = [
     },
 ]
 
-
 # Internationalization
 # https://docs.djangoproject.com/en/4.2/topics/i18n/
 
@@ -118,7 +114,6 @@ TIME_ZONE = 'UTC'
 USE_I18N = True
 
 USE_TZ = True
-
 
 # Static files (CSS, JavaScript, Images)
 # https://docs.djangoproject.com/en/4.2/howto/static-files/
@@ -142,9 +137,19 @@ STATICFILES_DIRS = [
 
 STATIC_ROOT = '/opt/belvo_files/static'
 
-# Django Rest Framework
-REST_FRAMEWORK = {}
-
 # Email regex pattern to use in URLs
 HOSTNAME_REGEX = r'[a-zA-Z0-9\_\-+\.]+'
 EMAIL_REGEX = rf'{HOSTNAME_REGEX}@{HOSTNAME_REGEX}\.{HOSTNAME_REGEX}'
+
+# Django Rest Framework
+REST_FRAMEWORK = {
+    'DEFAULT_SCHEMA_CLASS': 'drf_spectacular.openapi.AutoSchema',
+}
+
+# Swagger: API docs from drf_spetacular
+SPECTACULAR_SETTINGS = {
+    'TITLE': 'Belvo Wallet API',
+    'DESCRIPTION': 'A very simple REST API that stores financial transactions made by each user, summarizes spending and receivables and accounts transaction balances by category.',
+    'VERSION': '0.0.2',
+    'SERVE_INCLUDE_SCHEMA': False,
+}
