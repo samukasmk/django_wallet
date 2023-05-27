@@ -15,18 +15,22 @@ class FloatFieldTwoDecimalPoints(serializers.Field):
 
     def to_internal_value(self, data):
         """
-        Convert from str to float value to save on db
+        Convert from str to float value to save on db only if it's a str instance
         """
         try:
-            return float(data)
+            if isinstance(data, str):
+                data = float(data)
         except (TypeError, ValueError):
             raise serializers.ValidationError("Invalid float value")
+        return data
 
     def to_representation(self, value):
         """
-        Convert from float value to str with two decimal points to response serializer
+        Convert from float value to str with two decimal points to response serializer only if it's a float instance
         """
-        return '{:.2f}'.format(value)
+        if isinstance(value, float):
+            value = '{:.2f}'.format(value)
+        return value
 
 
 class FinancialTransactionSerializer(serializers.ModelSerializer):
