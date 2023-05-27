@@ -32,7 +32,7 @@ class FloatFieldTwoDecimalPoints(serializers.Field):
         Convert from float value to str with two decimal points to response serializer only if it's a float instance
         """
         if isinstance(value, float):
-            value = '{:.2f}'.format(value)
+            value = f'{value:.2f}'
         return value
 
 
@@ -96,7 +96,7 @@ class SummaryUserTransactionByCategory(serializers.Serializer):
         for summary_category in queryset_result:
             flow_type = summary_category['type']
             category_name = summary_category['category']
-            total_category = '{:.2f}'.format(summary_category['total'])
+            total_category = f'{summary_category["total"]:.2f}'
             response_dict[flow_type][category_name] = total_category
 
         return response_dict

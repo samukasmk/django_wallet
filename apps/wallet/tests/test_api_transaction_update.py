@@ -32,7 +32,7 @@ def test_update_transactions_by_put(api_client: APIClient,
             amount_transaction = amount_transaction - 10000000.0
 
         # change amount and category
-        transaction_to_get['amount'] = '{:.2f}'.format(amount_transaction)
+        transaction_to_get['amount'] = f'{amount_transaction:.2f}'
         transaction_to_get['category'] = 'updated_category_by_put'
 
         # get existent object of database from api
