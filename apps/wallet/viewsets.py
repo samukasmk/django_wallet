@@ -17,6 +17,17 @@ class FinancialTransactionsViewSet(mixins.CreateModelMixin, mixins.ListModelMixi
     queryset = FinancialTransaction.objects.all()
     serializer_class = FinancialTransactionSerializer
 
+    @swagger_schema(**create_transactions_schema)
+    def create(self, request: Request, *args, **kwargs) -> Response:
+        """
+        1.) Create multiple financial transactions records in bulk operation
+
+        2.) Create single financial transaction records
+        """
+        if isinstance(request.data, list):
+            self.serializer_many = True
+        return super().create(request, *args, **kwargs)
+
     @swagger_schema(**list_all_transactions_schema)
     def list(self, request: Request, *args, **kwargs) -> Response:
         """
@@ -30,17 +41,6 @@ class FinancialTransactionsViewSet(mixins.CreateModelMixin, mixins.ListModelMixi
 
         # list all financial transactions by builtin methods
         return super().list(request, *args, **kwargs)
-
-    @swagger_schema(**create_transactions_schema)
-    def create(self, request: Request, *args, **kwargs) -> Response:
-        """
-        1.) Create multiple financial transactions records in bulk operation
-
-        2.) Create single financial transaction records
-        """
-        if isinstance(request.data, list):
-            self.serializer_many = True
-        return super().create(request, *args, **kwargs)
 
     def summary_all_transactions_by_user_email(self) -> Response:
         """
@@ -80,3 +80,14 @@ class FinancialTransactionsViewSet(mixins.CreateModelMixin, mixins.ListModelMixi
         if self.serializer_many is not None:
             kwargs['many'] = self.serializer_many
         return super().get_serializer(*args, **kwargs)
+
+
+class FinancialTransactionViewSet(mixins.CreateModelMixin,
+                                  mixins.RetrieveModelMixin,
+                                  mixins.UpdateModelMixin,
+                                  mixins.DestroyModelMixin,
+                                  viewsets.GenericViewSet):
+    queryset = FinancialTransaction.objects.all()
+    serializer_class = FinancialTransactionSerializer
+    lookup_field = 'reference'
+    http_method_names = ['get', 'post', 'put', 'delete', 'head']

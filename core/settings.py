@@ -152,4 +152,6 @@ SPECTACULAR_SETTINGS = {
     'DESCRIPTION': 'A very simple REST API that stores financial transactions made by each user, summarizes spending and receivables and accounts transaction balances by category.',
     'VERSION': '0.0.2',
     'SERVE_INCLUDE_SCHEMA': False,
+    'SORT_OPERATIONS': False,
+    'SORT_OPERATION_PARAMETERS': False,
 }
