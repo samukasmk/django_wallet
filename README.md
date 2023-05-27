@@ -12,7 +12,7 @@ Before you can execute the installing commands, please ensure these external req
 - [docker-compose](https://docs.docker.com/compose/install/)
 
 
-To run this app on Docker containers, please execute the commands bellow:
+To run this app on Docker containers, please execute the commands below:
 ```shell
 # clone this repository
 git clone git@github.com:samukasmk/belvo_wallet.git
@@ -30,6 +30,7 @@ docker-compose up --build -d
 
 ## Using the REST API
 After `docker-compose` has created the new containers you can access them directly by URL: [http://127.0.0.1/transactions/](http://127.0.0.1/transactions/)
+
 from your preferred HTTP client like `chrome browser`, `postman`, `curl`, `python requests`, or others.
 
 If you prefer, I've documented the API endpoints with Swagger and OpenAPI 3.
@@ -41,104 +42,91 @@ and the system will redirect to the Swagger url at:
 
 **Example:**
 
-![.docs/images/swagger-home.png](.docs/images/swagger-home.png) 
+![.docs/images/home/swagger-1-home.png](.docs/images/home/swagger-1-home.png) 
 
-### Get users' transactions
+As requested in test description, I created 4 endpoint variations of `/transactions` verb to:
+- create many transactions in bulk: `POST /transactions`
+- list all existing transactions: `GET /transactions`
+- summarize transactions by value types: `GET /transactions?group_by=type`
+- summarize transactions grouped by category: `GET /transactions/{user_email}/summary`
+
+I also created, in addition 4 more new endpoints variations of `/transaction` verb to:
+- create a new single transaction record: `POST /transaction`
+- retrieve a record by reference id: `GET /transaction/{reference}`
+- update fields information: `PUT /transaction/{reference}`
+- and deleting it: `DELETE /transaction/{reference}`
+
+## Multiple transaction endpoints 
+### Create many transactions in bulk
+```
+POST /transactions
+```
+**Example:**
+
+![.docs/images/many-transactions/swagger-2-create-many.png](.docs/images/many-transactions/swagger-2-create-many.png)
+
+### List all existing transactions
 ```
 GET /transactions
 ```
+**Example:**
 
-```
-[
-    {
-        "reference": "000051",
-        "date": "2020-01-03",
-        "amount": "-51.13",
-        "type": "outflow",
-        "category": "groceries",
-        "user_email": "janedoe@email.com"
-    },
-    {
-        "reference": "000052",
-        "date": "2020-01-10",
-        "amount": "2500.72",
-        "type": "inflow",
-        "category": "salary",
-        "user_email": "janedoe@email.com"
-    },
-    {
-        "reference": "000053",
-        "date": "2020-01-10",
-        "amount": "-150.72",
-        "type": "outflow",
-        "category": "transfer",
-        "user_email": "janedoe@email.com"
-    },
-    {
-        "reference": "000054",
-        "date": "2020-01-13",
-        "amount": "-560.00",
-        "type": "outflow",
-        "category": "rent",
-        "user_email": "janedoe@email.com"
-    },
-    {
-        "reference": "000051",
-        "date": "2020-01-04",
-        "amount": "-51.13",
-        "type": "outflow",
-        "category": "other",
-        "user_email": "johndoe@email.com"
-    },
-    {
-        "reference": "000689",
-        "date": "2020-01-10",
-        "amount": "150.72",
-        "type": "inflow",
-        "category": "savings" ,
-        "user_email": "janedoe@email.com"
-    }
-]
-```
+![.docs/images/many-transactions/swagger-3-list-all.png](.docs/images/many-transactions/swagger-3-list-all.png)
 
-### Get transactions summary by user
+### Summarize transactions by value types
 ```
 GET /transactions?group_by=type
 ```
 
-```
-[
-    {
-        "user_email": "janedoe@email.com",
-        "total_inflow": "2651.44",
-        "total_outflow": "-761.85"
-    },
-    {
-        "user_email": "johndoe@email.com",
-        "total_inflow": "0.00",
-        "total_outflow": "-51.13"
-    }
-]
-```
+**Example:**
 
-### Get transactions summary by category
+![.docs/images/many-transactions/swagger-4-summary-by-user.png](.docs/images/many-transactions/swagger-4-summary-by-user.png)
+
+### Summarize transactions grouped by category
 ```
 GET /transactions/{user_email}/summary
 ```
 
+**Example:**
+
+![.docs/images/many-transactions/swagger-5-summary-by-category.png](.docs/images/many-transactions/swagger-5-summary-by-category.png)
+
+## Specific transaction endpoints
+### Create a new single transaction record
 ```
-{
-    "inflow": {
-        "salary": "2500.72",
-        "savings": "150.72"
-    },
-    "outflow": {
-        "groceries": "-51.13",
-        "rent": "-560.00",
-        "transfer": "-150.72"
-    }
-}
+POST /transaction
 ```
+
+**Example:**
+
+![.docs/images/single-transaction/swagger-6-create-single.png](.docs/images/single-transaction/swagger-6-create-single.png)
+
+### Retrieve a record by reference id
+```
+GET /transaction/{reference}
+```
+
+**Example:**
+
+![.docs/images/single-transaction/swagger-7-get-single.png](.docs/images/single-transaction/swagger-7-get-single.png)
+
+### Update fields information
+```
+PUT /transaction/{reference}
+```
+
+**Example:**
+
+![.docs/images/single-transaction/swagger-8-update-single.png](.docs/images/single-transaction/swagger-8-update-single.png)
+
+### And deleting it
+```
+DELETE /transaction/{reference}
+```
+
+**Example:**
+
+![.docs/images/single-transaction/swagger-9-delete.png](.docs/images/single-transaction/swagger-9-delete.png)
 
 ## Running unit tests (from docker container)
 Since docker-compose has built with success the image containers
