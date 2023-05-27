@@ -1,5 +1,7 @@
 from django.db import models
-from apps.wallet.exceptions import (InvalidTransactionType, InflowTransactionHasANegativeAmount,
+
+from apps.wallet.exceptions import (InflowTransactionHasANegativeAmount,
+                                    InvalidTransactionType,
                                     OutflowTransactionHasAPositiveAmount)
 
 

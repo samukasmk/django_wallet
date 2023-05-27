@@ -1,5 +1,8 @@
 from django.db import models
-from apps.wallet.validators import TransactionType, validate_flow_type, validate_amount_signal_for_type
+
+from apps.wallet.validators import (TransactionType,
+                                    validate_amount_signal_for_type,
+                                    validate_flow_type)
 
 
 class FinancialTransaction(models.Model):

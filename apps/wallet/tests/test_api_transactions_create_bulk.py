@@ -1,8 +1,10 @@
 import pytest
 from rest_framework import status
 from rest_framework.test import APIClient
+
 from apps.wallet.models import FinancialTransaction
-from apps.wallet.tests.conftest import sample_transactions_data, normalize_dict_to_model
+from apps.wallet.tests.conftest import (normalize_dict_to_model,
+                                        sample_transactions_data)
 
 
 @pytest.mark.django_db

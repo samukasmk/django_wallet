@@ -1,5 +1,6 @@
-import pytest
 from datetime import datetime
+
+import pytest
 from model_bakery import baker
 from rest_framework.test import APIClient
 

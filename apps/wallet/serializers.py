@@ -1,8 +1,11 @@
 from typing import Sequence
+
 from rest_framework import serializers
+
+from apps.wallet.exceptions import (InflowTransactionHasANegativeAmount,
+                                    OutflowTransactionHasAPositiveAmount)
 from apps.wallet.models import FinancialTransaction
 from apps.wallet.validators import validate_amount_signal_for_type
-from apps.wallet.exceptions import InflowTransactionHasANegativeAmount, OutflowTransactionHasAPositiveAmount
 
 
 class FloatFieldTwoDecimalPoints(serializers.Field):
