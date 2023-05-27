@@ -18,17 +18,41 @@ def test_creation_single_valid_transactions(api_client: APIClient, transaction_t
     assert response.status_code == status.HTTP_201_CREATED
 
     # check objects creation on db
-    transactions = FinancialTransaction.objects.all()
-    assert transactions.count() == 1
+    db_transactions = FinancialTransaction.objects.all()
+    assert db_transactions.count() == 1
 
     # check value assignments on objects fields
-    created_db_transaction = transactions.first()
+    created_db_transaction = db_transactions.first()
     assert created_db_transaction is not None
 
     # compare requests dict with existing model instance
     requested_transaction = normalize_dict_to_model(transaction_to_create)
     for field_name, field_value in requested_transaction.items():
         assert getattr(created_db_transaction, field_name) == field_value
+
+
+@pytest.mark.django_db
+@pytest.mark.parametrize('transaction_to_create', sample_transactions_data())
+def test_creation_single_transactions_invalid_type(api_client: APIClient, transaction_to_create: dict) -> None:
+    """
+    Test endpoint to create specific transaction with invalid transaction type
+    """
+    # change amount value for invalid signal for transaction type
+    transaction_to_create['type'] = 'invalid'
+
+    # make api request
+    response = api_client.post('/transactions', transaction_to_create)
+
+    # check status code
+    assert response.status_code == status.HTTP_400_BAD_REQUEST
+
+    # check error response
+    assert 'type' in response.data
+    assert len(response.data['type'])
+    assert 'is not a valid choice' in str(response.data['type'][0])
+
+    # check objects creation on db
+    assert FinancialTransaction.objects.all().count() == 0
 
 
 @pytest.mark.django_db
@@ -57,12 +81,12 @@ def test_creation_single_transactions_invalid_signals(api_client: APIClient, tra
 
 @pytest.mark.django_db
 @pytest.mark.parametrize('transaction_to_create', sample_transactions_data())
-def test_creation_single_transactions_invalid_type(api_client: APIClient, transaction_to_create: dict) -> None:
+def test_creation_single_transactions_invalid_value(api_client: APIClient, transaction_to_create: dict) -> None:
     """
-    Test endpoint to create specific transaction with invalid transaction type
+    Test endpoint to create transactions with invalid amount values of each transaction
     """
     # change amount value for invalid signal for transaction type
-    transaction_to_create['type'] = 'invalid'
+    transaction_to_create['amount'] = '1.a'
 
     # make api request
     response = api_client.post('/transactions', transaction_to_create)
@@ -71,9 +95,9 @@ def test_creation_single_transactions_invalid_type(api_client: APIClient, transa
     assert response.status_code == status.HTTP_400_BAD_REQUEST
 
     # check error response
-    assert 'type' in response.data
-    assert len(response.data['type'])
-    assert 'is not a valid choice' in str(response.data['type'][0])
+    assert 'amount' in response.data
+    assert len(response.data['amount'])
+    assert 'Invalid float value' in str(response.data['amount'][0])
 
     # check objects creation on db
     assert FinancialTransaction.objects.all().count() == 0
