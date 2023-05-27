@@ -8,16 +8,20 @@ from apps.wallet.serializers import (FinancialTransactionSerializer, SummaryAllT
                                      SummaryUserTransactionByCategory)
 from apps.wallet.logic import summarize_all_transactions_by_user_email, summarize_user_transactions_by_category
 from rest_framework import mixins
+from drf_spectacular.utils import extend_schema as swagger_schema
+from apps.wallet.schemas import list_all_transactions_schema, create_transactions_schema
 
 
 class FinancialTransactionsViewSet(mixins.CreateModelMixin, mixins.ListModelMixin, viewsets.GenericViewSet):
     queryset = FinancialTransaction.objects.all()
     serializer_class = FinancialTransactionSerializer
 
+    @swagger_schema(**list_all_transactions_schema)
     def list(self, request: Request, *args, **kwargs) -> Response:
         """
-        List all financial transactions
-        or aggregate amount values if ?group_by=type is defined
+        1.) List all financial transactions records (without query params)
+
+        2.) Return the summary with aggregated total_inflow and total_outflows per user (with param: ?group_by=type)
         """
         # summarize amount by flow type if group_by query parameter is declared as type
         if request.GET.get('group_by') == 'type':
@@ -26,9 +30,12 @@ class FinancialTransactionsViewSet(mixins.CreateModelMixin, mixins.ListModelMixi
         # list all financial transactions by builtin methods
         return super().list(request, *args, **kwargs)
 
+    @swagger_schema(**create_transactions_schema)
     def create(self, request: Request, *args, **kwargs) -> Response:
         """
-        Create financial transactions for each object of bulk list
+        1.) Create single financial transaction records
+
+        2.) Create multiple financial transactions records in bulk operation
         """
         if isinstance(request.data, list):
             self.serializer_many = True
