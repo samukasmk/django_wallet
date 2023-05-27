@@ -1,10 +1,8 @@
 from typing import Sequence
 from rest_framework import serializers
 from apps.wallet.models import FinancialTransaction
-from apps.wallet.validators import validate_flow_type, validate_amount_signal_for_type
-from apps.wallet.exceptions import (InvalidTransactionType,
-                                    InflowTransactionHasANegativeAmount,
-                                    OutflowTransactionHasAPositiveAmount)
+from apps.wallet.validators import validate_amount_signal_for_type
+from apps.wallet.exceptions import InflowTransactionHasANegativeAmount, OutflowTransactionHasAPositiveAmount
 
 
 class FloatFieldTwoDecimalPoints(serializers.Field):
@@ -45,13 +43,6 @@ class FinancialTransactionSerializer(serializers.ModelSerializer):
         """
         Validate input values from POST creations
         """
-        # check transaction types
-        try:
-            validate_flow_type(transaction_type=data['type'])
-        except InvalidTransactionType as exc:
-            raise serializers.ValidationError(
-                {'type': InvalidTransactionType.message}) from exc
-
         # check signal of amount value before call save method.
         try:
             validate_amount_signal_for_type(data['type'], float(data['amount']))
