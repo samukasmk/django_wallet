@@ -133,7 +133,7 @@ DELETE /transaction/{reference}
 ![.docs/images/single-transaction/swagger-9-delete.png](.docs/images/single-transaction/swagger-9-delete.png)
 
 ## Running unit tests (from docker container)
-Since docker-compose has built with success the image containers
+Since `docker-compose` has built with success the image containers
 you can run the `unit tests` directly from `docker-compose` with the command: 
 
 ```shell
@@ -144,6 +144,12 @@ docker-compose run --rm unit-tests
 
 ![.docs/gifs/docker-compose-unittests.gif](.docs/gifs/docker-compose-unittests.gif)
 
+> Note: I covered as much as possible in terms of time, the variants of test scenarios,
+> reaching the coverage level of 100%, but many tests can be improved in terms of
+> performance, simplicity, and even cover unforeseen scenarios by coverage tool
+> because I wrote them as quickly as possible in the time of I had
+
+![.docs/images/tests/unit-tests-a-hundred-percent.png](.docs/images/tests/unit-tests-a-hundred-percent.png)
 
 # Extra: Working in your local machine (without docker)  
 
