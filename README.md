@@ -1,7 +1,7 @@
 # belvo_wallet
-A very simple REST API that stores financial transactions made by each user, summarizes spending and receivables and accounts transaction balances by category. 
+A very simple REST API that stores financial transactions made by each user, summarizes spending, and receivables and accounts transaction balances by category. 
 
-This project is part of the techincal test performed for Belvo company on position of Backend Engineer - Mid Level position.
+This project is part of the technical test performed for Belvo company on the position of Backend Engineer - Mid Level position.
 
 ## Installation
 > This installation mode is the most indicated when the goal is to run in production mode.
@@ -29,17 +29,17 @@ docker-compose up --build -d
 ![.docs/gifs/docker-compose-up.gif](.docs/gifs/docker-compose-up.gif) 
 
 ## Using the REST API
-After `docker-compose` has created the new containers you can access directly by URL: [http://127.0.0.1/transactions/](http://127.0.0.1/transactions/)
-from your preferred http client like `chrome browser`, `postman`, `curl`, `python requests` or others.
+After `docker-compose` has created the new containers you can access them directly by URL: [http://127.0.0.1/transactions/](http://127.0.0.1/transactions/)
+from your preferred HTTP client like `chrome browser`, `postman`, `curl`, `python requests`, or others.
 
 If you prefer, I've documented the API endpoints with Swagger and OpenAPI 3.
 
-To access you just need to access the root URL of django like:
+To access you just need to access the root URL of Django like:
 [http://127.0.0.1](http://127.0.0.1)
 and the system will redirect to the Swagger url at:
 [http://127.0.0.1/api/docs](http://127.0.0.1/api/docs)
 
-Example:
+**Example:**
 
 ![.docs/images/swagger-home.png](.docs/images/swagger-home.png) 
 
@@ -141,8 +141,8 @@ GET /transactions/{user_email}/summary
 ```
 
 ## Running unit tests (from docker container)
-Since docker-compose has built with success your image containers
-you can run the `unit tests` directly from `docker-compose` with command: 
+Since docker-compose has built with success the image containers
+you can run the `unit tests` directly from `docker-compose` with the command: 
 
 ```shell
 docker-compose run --rm unit-tests
@@ -157,9 +157,9 @@ docker-compose run --rm unit-tests
 
 ## Installing in your local machine
 > This installation mode is a very specific implementation to install **(without Docker)** for development purposes like debugging this app in your IDE.
-> **If you want to run with Docker, please ignore these instructions bellow returning to topic [Installation](#installation).**
+> **If you want to run with Docker, please ignore the instructions below returning to the topic of [Installation](#installation).**
 
-To run this Django project in your local machine, execute the commands bellow:
+To run this Django project in your local machine, execute the commands below:
 ```shell
 # clone this repository
 git clone https://github.com/samukasmk/belvo_wallet.git
