@@ -1,8 +1,10 @@
 import pytest
 from rest_framework import status
 from rest_framework.test import APIClient
+
 from apps.wallet.models import FinancialTransaction
-from apps.wallet.tests.conftest import sample_transactions_data, normalize_dict_to_model
+from apps.wallet.tests.conftest import (normalize_dict_to_model,
+                                        sample_transactions_data)
 
 
 @pytest.mark.django_db
@@ -13,7 +15,7 @@ def test_creation_bulk_valid_transactions(api_client: APIClient) -> None:
     transactions_to_create = sample_transactions_data()
 
     # make api request
-    response = api_client.post('/transactions/', transactions_to_create)
+    response = api_client.post('/transactions', transactions_to_create)
 
     # check status code
     assert response.status_code == status.HTTP_201_CREATED
@@ -36,6 +38,33 @@ def test_creation_bulk_valid_transactions(api_client: APIClient) -> None:
 
 
 @pytest.mark.django_db
+def test_creation_bulk_transactions_invalid_type(api_client: APIClient) -> None:
+    """
+    Test endpoint to create many transactions with one invalid transaction type
+    """
+    transactions_to_create = sample_transactions_data()
+
+    # change amount value for invalid signal for transaction type
+    transactions_to_create[-1]['type'] = 'invalid_type'
+
+    # make api request
+    response = api_client.post('/transactions', transactions_to_create)
+
+    # check status code
+    assert response.status_code == status.HTTP_400_BAD_REQUEST
+
+    # check error response
+    error_responses = [error_detail['type']
+                       for error_detail in response.data
+                       if 'type' in error_detail.keys()]
+    assert len(error_responses)
+    assert 'is not a valid choice' in str(error_responses[0])
+
+    # check objects creation on db
+    assert FinancialTransaction.objects.all().count() == 0
+
+
+@pytest.mark.django_db
 def test_creation_bulk_transactions_invalid_signals(api_client: APIClient) -> None:
     """
     Test endpoint to create transactions with invalid amount values of many transactions
@@ -46,7 +75,7 @@ def test_creation_bulk_transactions_invalid_signals(api_client: APIClient) -> No
     transactions_to_create[-1]['amount'] = str(-float(transactions_to_create[-1]['amount']))
 
     # make api request
-    response = api_client.post('/transactions/', transactions_to_create)
+    response = api_client.post('/transactions', transactions_to_create)
 
     # check status code
     assert response.status_code == status.HTTP_400_BAD_REQUEST
@@ -63,27 +92,27 @@ def test_creation_bulk_transactions_invalid_signals(api_client: APIClient) -> No
 
 
 @pytest.mark.django_db
-def test_creation_bulk_transactions_invalid_type(api_client: APIClient) -> None:
+def test_creation_bulk_transactions_invalid_value(api_client: APIClient) -> None:
     """
-    Test endpoint to create many transactions with one invalid transaction type
+    Test endpoint to create transactions with invalid amount values of many transactions
     """
     transactions_to_create = sample_transactions_data()
 
     # change amount value for invalid signal for transaction type
-    transactions_to_create[-1]['type'] = 'invalid_type'
+    transactions_to_create[-1]['amount'] = '2.b'
 
     # make api request
-    response = api_client.post('/transactions/', transactions_to_create)
+    response = api_client.post('/transactions', transactions_to_create)
 
     # check status code
     assert response.status_code == status.HTTP_400_BAD_REQUEST
 
     # check error response
-    error_responses = [error_detail['type']
+    error_responses = [error_detail['amount']
                        for error_detail in response.data
-                       if 'type' in error_detail.keys()]
+                       if 'amount' in error_detail.keys()]
     assert len(error_responses)
-    assert 'is not a valid choice' in str(error_responses[0])
+    assert 'Invalid float value' in str(error_responses[0])
 
     # check objects creation on db
     assert FinancialTransaction.objects.all().count() == 0
@@ -104,7 +133,7 @@ def test_creation_bulk_transactions_missing_required_fields(api_client: APIClien
     transactions_to_create[transaction_position_in_bulk].pop(required_field, None)
 
     # make api request
-    response = api_client.post('/transactions/', transactions_to_create)
+    response = api_client.post('/transactions', transactions_to_create)
 
     # check status code
     assert response.status_code == status.HTTP_400_BAD_REQUEST

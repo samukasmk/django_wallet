@@ -1,10 +1,11 @@
 from typing import Sequence
+
 from rest_framework import serializers
-from apps.wallet.models import FinancialTransaction
-from apps.wallet.validators import validate_flow_type, validate_amount_signal_for_type
-from apps.wallet.exceptions import (InvalidTransactionType,
-                                    InflowTransactionHasANegativeAmount,
+
+from apps.wallet.exceptions import (InflowTransactionHasANegativeAmount,
                                     OutflowTransactionHasAPositiveAmount)
+from apps.wallet.models import FinancialTransaction
+from apps.wallet.validators import validate_amount_signal_for_type
 
 
 class FloatFieldTwoDecimalPoints(serializers.Field):
@@ -17,18 +18,22 @@ class FloatFieldTwoDecimalPoints(serializers.Field):
 
     def to_internal_value(self, data):
         """
-        Convert from str to float value to save on db
+        Convert from str to float value to save on db only if it's a str instance
         """
         try:
-            return float(data)
+            if isinstance(data, str):
+                data = float(data)
         except (TypeError, ValueError):
             raise serializers.ValidationError("Invalid float value")
+        return data
 
     def to_representation(self, value):
         """
-        Convert from float value to str with two decimal points to response serializer
+        Convert from float value to str with two decimal points to response serializer only if it's a float instance
         """
-        return '{:.2f}'.format(value)
+        if isinstance(value, float):
+            value = f'{value:.2f}'
+        return value
 
 
 class FinancialTransactionSerializer(serializers.ModelSerializer):
@@ -45,16 +50,15 @@ class FinancialTransactionSerializer(serializers.ModelSerializer):
         """
         Validate input values from POST creations
         """
-        # check transaction types
-        try:
-            validate_flow_type(transaction_type=data['type'])
-        except InvalidTransactionType as exc:
-            raise serializers.ValidationError(
-                {'type': InvalidTransactionType.message}) from exc
+        # check if reference has changed
+        if self.instance and self.instance.reference != data['reference']:
+            raise serializers.ValidationError({'reference': ('reference is a read-only field and '
+                                                             'it can\'t be changed by payload.')})
 
         # check signal of amount value before call save method.
         try:
-            validate_amount_signal_for_type(data['type'], float(data['amount']))
+            if 'type' in data.keys() and 'amount' in data.keys():
+                validate_amount_signal_for_type(data['type'], float(data['amount']))
         except InflowTransactionHasANegativeAmount as exc:
             raise serializers.ValidationError(
                 {'amount': InflowTransactionHasANegativeAmount.message}) from exc
@@ -62,7 +66,7 @@ class FinancialTransactionSerializer(serializers.ModelSerializer):
             raise serializers.ValidationError(
                 {'amount': OutflowTransactionHasAPositiveAmount.message}) from exc
         except Exception as exc:
-            raise serializers.ValidationError({'amount': 'error on validation'}) from exc
+            raise serializers.ValidationError({'unknown': 'error on validation'}) from exc
 
         # call other validations of inheritance
         return super().validate(data)
@@ -92,7 +96,7 @@ class SummaryUserTransactionByCategory(serializers.Serializer):
         for summary_category in queryset_result:
             flow_type = summary_category['type']
             category_name = summary_category['category']
-            total_category = '{:.2f}'.format(summary_category['total'])
+            total_category = f'{summary_category["total"]:.2f}'
             response_dict[flow_type][category_name] = total_category
 
         return response_dict

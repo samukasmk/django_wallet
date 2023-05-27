@@ -1,8 +1,12 @@
-import pytest
 from typing import List, Sequence
+
+import pytest
+
+from apps.wallet.logic import (summarize_all_transactions_by_user_email,
+                               summarize_user_transactions_by_category)
 from apps.wallet.models import FinancialTransaction
-from apps.wallet.logic import summarize_all_transactions_by_user_email, summarize_user_transactions_by_category
-from apps.wallet.tests.conftest import sample_expected_queryset_summary_by_category
+from apps.wallet.tests.conftest import \
+    sample_expected_queryset_summary_by_category
 
 
 @pytest.mark.django_db

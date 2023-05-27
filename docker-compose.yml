@@ -2,9 +2,11 @@ version: '3.9'
 
 services:
   django:
-    image: belvo_wallet
+    image: belvo_wallet_production
     build:
       context: .
+      args:
+        INSTALL_LIBS: production
     command: gunicorn core.wsgi:application --bind 0.0.0.0:5000
     environment:
       - DJANGO_SETTINGS_MODULE=core.settings
@@ -17,8 +19,6 @@ services:
     restart: on-failure
     depends_on:
       - postgres
-    ports:
-      - 8000:8000
     networks:
       - local
 
@@ -49,7 +49,7 @@ services:
       - local
 
   build-environment:
-    image: belvo_wallet
+    image: belvo_wallet_production
     command: make build-environment
     environment:
       - DJANGO_SETTINGS_MODULE=core.settings
@@ -64,6 +64,20 @@ services:
     networks:
       - local
 
+  unit-tests:
+    image: belvo_wallet_development
+    build:
+      context: .
+      args:
+        INSTALL_LIBS: development
+    command: make test
+    environment:
+      - DJANGO_SETTINGS_MODULE=core.testing
+      - DEBUG=TRUE
+    volumes:
+      - .:/opt/belvo_wallet
+    scale: 0 # this parameter disables this service to run on `docker-compose up` command
+             # to run the unit-tests please execute manually the command: `docker-compose run --rm unit-tests`
 
 volumes:
   belvo_postgres:

@@ -1,5 +1,7 @@
 from typing import Sequence
-from django.db.models import Sum, Q
+
+from django.db.models import Q, Sum
+
 from apps.wallet.models import FinancialTransaction
 
 

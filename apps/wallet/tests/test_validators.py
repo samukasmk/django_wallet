@@ -1,8 +1,10 @@
 import pytest
-from apps.wallet.validators import validate_flow_type, validate_amount_signal_for_type
-from apps.wallet.exceptions import (InvalidTransactionType,
-                                    InflowTransactionHasANegativeAmount,
+
+from apps.wallet.exceptions import (InflowTransactionHasANegativeAmount,
+                                    InvalidTransactionType,
                                     OutflowTransactionHasAPositiveAmount)
+from apps.wallet.validators import (validate_amount_signal_for_type,
+                                    validate_flow_type)
 
 
 def test_signal_amount_validation_for_valid_value() -> None:
@@ -40,11 +42,11 @@ def test_valid_transaction_types() -> None:
     """
     Test valid values for transaction types
     """
-    assert validate_flow_type(transaction_type='inflow')
-    assert validate_flow_type(transaction_type='outflow')
+    assert validate_flow_type(transaction_type='inflow') is None
+    assert validate_flow_type(transaction_type='outflow') is None
 
 
-def test_valid_transaction_types() -> None:
+def test_invalid_transaction_types() -> None:
     """
     Test invalid values for transaction types
     """

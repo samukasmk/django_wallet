@@ -14,19 +14,35 @@ Including another URLconf
     1. Import the include() function: from django.urls import include, path
     2. Add a URL to urlpatterns:  path('blog/', include('blog.urls'))
 """
-from django.contrib import admin
-from django.urls import path, include
 from django.conf import settings
 from django.conf.urls.static import static
+from django.urls import include, path
+from django.views.generic import RedirectView
+from drf_spectacular.views import SpectacularAPIView, SpectacularSwaggerView
 from rest_framework import routers
-from apps.wallet.viewsets import FinancialTransactionsViewSet
+
+from apps.wallet.viewsets import (FinancialTransactionsViewSet,
+                                  FinancialTransactionViewSet)
 
 # wallet routes
-router = routers.DefaultRouter()
-router.register(r'transactions', FinancialTransactionsViewSet)
+router_many_transactions = routers.DefaultRouter(trailing_slash=False)
+router_many_transactions.register(r'transactions', FinancialTransactionsViewSet)
+
+router_each_transaction = routers.DefaultRouter(trailing_slash=False)
+router_each_transaction.register(r'transaction', FinancialTransactionViewSet)
 
 urlpatterns = [
-    path('', include(router.urls)),
-    path('api-auth/', include('rest_framework.urls')),
-    path('admin/', admin.site.urls),
-] + static(settings.STATIC_URL, document_root=settings.STATIC_ROOT)
+    # Redirection from / to /api/docs
+    path(r'', RedirectView.as_view(url='/api/docs')),
+
+    # API docs by swagger
+    path('api/schema', SpectacularAPIView.as_view(), name='schema'),
+    path('api/docs', SpectacularSwaggerView.as_view(url_name='schema'), name='swagger-ui'),
+
+    # Inclusion of rest framework viewsets
+    path('', include(router_many_transactions.urls)),
+    path('', include(router_each_transaction.urls)),
+]
+
+if settings.DEBUG is True:
+    urlpatterns += static(settings.STATIC_URL, document_root=settings.STATIC_ROOT)

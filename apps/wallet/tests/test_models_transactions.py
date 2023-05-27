@@ -1,7 +1,10 @@
-import pytest
-from apps.wallet.models import FinancialTransaction
-from apps.wallet.exceptions import InflowTransactionHasANegativeAmount, OutflowTransactionHasAPositiveAmount
 from datetime import date
+
+import pytest
+
+from apps.wallet.exceptions import (InflowTransactionHasANegativeAmount,
+                                    OutflowTransactionHasAPositiveAmount)
+from apps.wallet.models import FinancialTransaction
 
 
 @pytest.mark.django_db
@@ -67,3 +70,43 @@ def test_create_unexpected_outflow_positive_amount() -> None:
                                             category='bills',
                                             user_email='leonardo@email.com')
     assert FinancialTransaction.objects.all().count() == 0
+
+
+@pytest.mark.django_db
+def test_model_method_transaction_to_dict() -> None:
+    from apps.wallet.models import FinancialTransaction
+    assert FinancialTransaction.objects.all().count() == 0
+    FinancialTransaction.objects.create(reference='001001',
+                                        date='2021-05-01',
+                                        amount=10000.0,
+                                        type='inflow',
+                                        category='savings',
+                                        user_email='john@email.com')
+    assert FinancialTransaction.objects.all().count() == 1
+    created_transaction = FinancialTransaction.objects.first()
+    assert created_transaction.to_dict() == dict(reference='001001',
+                                                 date='2021-05-01',
+                                                 amount='10000.00',
+                                                 type='inflow',
+                                                 category='savings',
+                                                 user_email='john@email.com')
+
+
+@pytest.mark.django_db
+def test_model_method_transaction_to_str() -> None:
+    from apps.wallet.models import FinancialTransaction
+    assert FinancialTransaction.objects.all().count() == 0
+    FinancialTransaction.objects.create(reference='001001',
+                                        date='2021-05-01',
+                                        amount=10000.0,
+                                        type='inflow',
+                                        category='savings',
+                                        user_email='john@email.com')
+    assert FinancialTransaction.objects.all().count() == 1
+    created_transaction = FinancialTransaction.objects.first()
+    assert str(created_transaction) == str(dict(reference='001001',
+                                                date='2021-05-01',
+                                                amount='10000.00',
+                                                type='inflow',
+                                                category='savings',
+                                                user_email='john@email.com'))
