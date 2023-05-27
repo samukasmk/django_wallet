@@ -24,6 +24,10 @@ cd belvo_wallet
 docker-compose up --build -d
 ```
 
+**Example:**
+
+![.docs/gifs/docker-compose-up.gif](.docs/gifs/docker-compose-up.gif) 
+
 ## Using the REST API
 After `docker-compose` has created the new containers you can access directly by URL: [http://127.0.0.1/transactions/](http://127.0.0.1/transactions/)
 
@@ -134,6 +138,9 @@ you can run the `unit tests` directly from `docker-compose` with command:
 docker-compose run --rm unittests
 ```
 
+**Example:**
+
+![.docs/gifs/docker-compose-unittests.gif](.docs/gifs/docker-compose-unittests.gif)
 
 
 # Extra: Working in your local machine (without docker)  
