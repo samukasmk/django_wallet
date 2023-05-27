@@ -19,15 +19,28 @@ from django.urls import path, include
 from django.conf import settings
 from django.conf.urls.static import static
 from rest_framework import routers
-from apps.wallet.viewsets import FinancialTransactionsViewSet
+from apps.wallet.viewsets import FinancialTransactionsViewSet, FinancialTransactionViewSet
+from drf_spectacular.views import SpectacularAPIView, SpectacularSwaggerView
+from django.views.generic import RedirectView
 
 # wallet routes
-router = routers.DefaultRouter(trailing_slash=False)
-router.register(r'transactions', FinancialTransactionsViewSet)
+router_many_transactions = routers.DefaultRouter(trailing_slash=False)
+router_many_transactions.register(r'transactions', FinancialTransactionsViewSet)
+
+router_each_transaction = routers.DefaultRouter(trailing_slash=False)
+router_each_transaction.register(r'transaction', FinancialTransactionViewSet)
 
 urlpatterns = [
-    path('', include(router.urls)),
-    path('api-auth/', include('rest_framework.urls')),
+    # Redirection from / to /api/docs
+    path(r'', RedirectView.as_view(url='/api/docs')),
+
+    # API docs by swagger
+    path('api/schema', SpectacularAPIView.as_view(), name='schema'),
+    path('api/docs', SpectacularSwaggerView.as_view(url_name='schema'), name='swagger-ui'),
+
+    # Inclusion of rest framework viewsets
+    path('', include(router_many_transactions.urls)),
+    path('', include(router_each_transaction.urls)),
 ]
 
 if settings.DEBUG is True:

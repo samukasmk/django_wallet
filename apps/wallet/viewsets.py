@@ -7,16 +7,31 @@ from apps.wallet.models import FinancialTransaction
 from apps.wallet.serializers import (FinancialTransactionSerializer, SummaryAllTransactionsByUser,
                                      SummaryUserTransactionByCategory)
 from apps.wallet.logic import summarize_all_transactions_by_user_email, summarize_user_transactions_by_category
+from rest_framework import mixins
+from drf_spectacular.utils import extend_schema as swagger_schema
+from apps.wallet.schemas import (list_many_transactions_schema, create_many_transactions_schema,
+                                 summary_user_transactions_by_category_schema, create_single_transaction_schema,
+                                 retrieve_single_transaction_schema, update_single_transaction_schema)
 
 
-class FinancialTransactionsViewSet(viewsets.ModelViewSet):
+class FinancialTransactionsViewSet(mixins.CreateModelMixin, mixins.ListModelMixin, viewsets.GenericViewSet):
     queryset = FinancialTransaction.objects.all()
     serializer_class = FinancialTransactionSerializer
 
+    @swagger_schema(**create_many_transactions_schema)
+    def create(self, request: Request, *args, **kwargs) -> Response:
+        """
+        Create multiple financial transactions records in bulk operation
+        """
+        self.serializer_many = True
+        return super().create(request, *args, **kwargs)
+
+    @swagger_schema(**list_many_transactions_schema)
     def list(self, request: Request, *args, **kwargs) -> Response:
         """
-        List all financial transactions
-        or aggregate amount values if ?group_by=type is defined
+        1.) List all financial transactions records (without query params)
+
+        2.) Return the summary with aggregated total_inflow and total_outflows per user (with param: ?group_by=type)
         """
         # summarize amount by flow type if group_by query parameter is declared as type
         if request.GET.get('group_by') == 'type':
@@ -24,14 +39,6 @@ class FinancialTransactionsViewSet(viewsets.ModelViewSet):
 
         # list all financial transactions by builtin methods
         return super().list(request, *args, **kwargs)
-
-    def create(self, request: Request, *args, **kwargs) -> Response:
-        """
-        Create financial transactions for each object of bulk list
-        """
-        if isinstance(request.data, list):
-            self.serializer_many = True
-        return super().create(request, *args, **kwargs)
 
     def summary_all_transactions_by_user_email(self) -> Response:
         """
@@ -42,11 +49,11 @@ class FinancialTransactionsViewSet(viewsets.ModelViewSet):
         serializer = SummaryAllTransactionsByUser(queryset, many=True)
         return Response(serializer.data, status=status.HTTP_200_OK)
 
+    @swagger_schema(**summary_user_transactions_by_category_schema)
     @action(methods=['GET'], detail=False, url_path=rf'(?P<user_email>{settings.EMAIL_REGEX})/summary')
     def summary_user_transactions_by_category(self, request: Request, user_email: str, *args, **kwargs) -> Response:
         """
-        Aggregate amount values of user's transactions
-        grouping by category
+        1.) Return user's transactions summary, grouping the sum transactions amount by categories
         """
         queryset = summarize_user_transactions_by_category(user_email)
         serializer = SummaryUserTransactionByCategory(queryset)
@@ -71,3 +78,43 @@ class FinancialTransactionsViewSet(viewsets.ModelViewSet):
         if self.serializer_many is not None:
             kwargs['many'] = self.serializer_many
         return super().get_serializer(*args, **kwargs)
+
+
+class FinancialTransactionViewSet(mixins.CreateModelMixin,
+                                  mixins.RetrieveModelMixin,
+                                  mixins.UpdateModelMixin,
+                                  mixins.DestroyModelMixin,
+                                  viewsets.GenericViewSet):
+    queryset = FinancialTransaction.objects.all()
+    serializer_class = FinancialTransactionSerializer
+    lookup_field = 'reference'
+    http_method_names = ['get', 'post', 'put', 'delete', 'head']
+
+    @swagger_schema(**create_single_transaction_schema)
+    def create(self, request: Request, *args, **kwargs) -> Response:
+        """
+        Create single financial transaction records
+        """
+        return super().create(request, *args, **kwargs)
+
+    @swagger_schema(**retrieve_single_transaction_schema)
+    def retrieve(self, request: Request, *args, **kwargs) -> Response:
+        """
+        Get single financial transaction records by reference id
+        """
+        return super().retrieve(request, *args, **kwargs)
+
+    @swagger_schema(**update_single_transaction_schema)
+    def update(self, request: Request, *args, **kwargs) -> Response:
+        """
+        Get single financial transaction records by reference id
+
+        Note: the reference field is read-only and it can't be changed by payload.
+        """
+        return super().update(request, *args, **kwargs)
+
+    def destroy(self, request: Request, *args, **kwargs) -> Response:
+        """
+        Delete single financial transaction records by reference id
+        """
+        return super().destroy(request, *args, **kwargs)

@@ -135,7 +135,7 @@ Since docker-compose has built with success your image containers
 you can run the `unit tests` directly from `docker-compose` with command: 
 
 ```shell
-docker-compose run --rm unittests
+docker-compose run --rm unit-tests
 ```
 
 **Example:**

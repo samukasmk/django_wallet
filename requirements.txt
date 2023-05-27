@@ -7,3 +7,6 @@ Django==4.2.1
 djangorestframework==3.14.0
 django-filter==23.2
 Markdown==3.4.3
+
+# swagger docs
+drf-spectacular==0.26.2

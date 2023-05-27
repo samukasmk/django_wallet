@@ -61,7 +61,7 @@ lint: clean
 	make clean-pytest-files;
 
 test: clean
-	pytest --cov=apps --cov-report term:skip-covered --cov-report html:htmlcov --junit-xml=coverage.xml;
+	pytest --cov=apps --cov-config=.coveragerc --cov-report term:skip-covered --cov-report html:htmlcov --junit-xml=coverage.xml;
 	make clean-pytest-files;
 	sudo chmod 777 ./coverage.xml;
 	sudo chmod -R 777 ./htmlcov;

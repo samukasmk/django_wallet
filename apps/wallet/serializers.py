@@ -15,18 +15,22 @@ class FloatFieldTwoDecimalPoints(serializers.Field):
 
     def to_internal_value(self, data):
         """
-        Convert from str to float value to save on db
+        Convert from str to float value to save on db only if it's a str instance
         """
         try:
-            return float(data)
+            if isinstance(data, str):
+                data = float(data)
         except (TypeError, ValueError):
             raise serializers.ValidationError("Invalid float value")
+        return data
 
     def to_representation(self, value):
         """
-        Convert from float value to str with two decimal points to response serializer
+        Convert from float value to str with two decimal points to response serializer only if it's a float instance
         """
-        return '{:.2f}'.format(value)
+        if isinstance(value, float):
+            value = '{:.2f}'.format(value)
+        return value
 
 
 class FinancialTransactionSerializer(serializers.ModelSerializer):
@@ -43,9 +47,15 @@ class FinancialTransactionSerializer(serializers.ModelSerializer):
         """
         Validate input values from POST creations
         """
+        # check if reference has changed
+        if self.instance and self.instance.reference != data['reference']:
+            raise serializers.ValidationError({'reference': ('reference is a read-only field and '
+                                                             'it can\'t be changed by payload.')})
+
         # check signal of amount value before call save method.
         try:
-            validate_amount_signal_for_type(data['type'], float(data['amount']))
+            if 'type' in data.keys() and 'amount' in data.keys():
+                validate_amount_signal_for_type(data['type'], float(data['amount']))
         except InflowTransactionHasANegativeAmount as exc:
             raise serializers.ValidationError(
                 {'amount': InflowTransactionHasANegativeAmount.message}) from exc
@@ -53,7 +63,7 @@ class FinancialTransactionSerializer(serializers.ModelSerializer):
             raise serializers.ValidationError(
                 {'amount': OutflowTransactionHasAPositiveAmount.message}) from exc
         except Exception as exc:
-            raise serializers.ValidationError({'amount': 'error on validation'}) from exc
+            raise serializers.ValidationError({'unknown': 'error on validation'}) from exc
 
         # call other validations of inheritance
         return super().validate(data)
