@@ -43,3 +43,14 @@ create_transactions_schema = {
                                         "type": "outflow",
                                         "category": "rent",
                                         "user_email": "janedoe@email.com"}])]}
+
+summary_user_transactions_by_category_schema = {
+    'examples': [OpenApiExample('janedoe@email.com',
+                                value={"inflow": {"salary": "2500.72",
+                                                  "savings": "150.72"},
+                                       "outflow": {"groceries": "-51.13",
+                                                   "rent": "-560.00",
+                                                   "transfer": "-150.72"}}),
+                 OpenApiExample('johndoe@email.com',
+                                value={"inflow": {},
+                                       "outflow": {"other": "-51.13"}})]}

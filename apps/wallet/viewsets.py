@@ -9,7 +9,8 @@ from apps.wallet.serializers import (FinancialTransactionSerializer, SummaryAllT
 from apps.wallet.logic import summarize_all_transactions_by_user_email, summarize_user_transactions_by_category
 from rest_framework import mixins
 from drf_spectacular.utils import extend_schema as swagger_schema
-from apps.wallet.schemas import list_all_transactions_schema, create_transactions_schema
+from apps.wallet.schemas import (list_all_transactions_schema, create_transactions_schema,
+                                 summary_user_transactions_by_category_schema)
 
 
 class FinancialTransactionsViewSet(mixins.CreateModelMixin, mixins.ListModelMixin, viewsets.GenericViewSet):
@@ -50,11 +51,11 @@ class FinancialTransactionsViewSet(mixins.CreateModelMixin, mixins.ListModelMixi
         serializer = SummaryAllTransactionsByUser(queryset, many=True)
         return Response(serializer.data, status=status.HTTP_200_OK)
 
+    @swagger_schema(**summary_user_transactions_by_category_schema)
     @action(methods=['GET'], detail=False, url_path=rf'(?P<user_email>{settings.EMAIL_REGEX})/summary')
     def summary_user_transactions_by_category(self, request: Request, user_email: str, *args, **kwargs) -> Response:
         """
-        Aggregate amount values of user's transactions
-        grouping by category
+        1.) Return user's transactions summary, grouping the sum transactions amount by categories
         """
         queryset = summarize_user_transactions_by_category(user_email)
         serializer = SummaryUserTransactionByCategory(queryset)
