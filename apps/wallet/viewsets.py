@@ -7,9 +7,10 @@ from apps.wallet.models import FinancialTransaction
 from apps.wallet.serializers import (FinancialTransactionSerializer, SummaryAllTransactionsByUser,
                                      SummaryUserTransactionByCategory)
 from apps.wallet.logic import summarize_all_transactions_by_user_email, summarize_user_transactions_by_category
+from rest_framework import mixins
 
 
-class FinancialTransactionsViewSet(viewsets.ModelViewSet):
+class FinancialTransactionsViewSet(mixins.CreateModelMixin, mixins.ListModelMixin, viewsets.GenericViewSet):
     queryset = FinancialTransaction.objects.all()
     serializer_class = FinancialTransactionSerializer
 
