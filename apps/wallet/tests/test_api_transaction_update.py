@@ -1,3 +1,4 @@
+from decimal import Decimal
 from typing import Sequence
 
 import pytest
@@ -19,7 +20,7 @@ def test_update_transactions_by_put(api_client: APIClient,
 
     # get each transaction on database one by one
     for transaction_to_get in transactions_to_get:
-        amount_transaction = float(transaction_to_get["amount"])
+        amount_transaction = Decimal(transaction_to_get["amount"])
 
         # ensure current amount is equal of request value in mock
         assert FinancialTransaction.objects.get(
@@ -27,12 +28,12 @@ def test_update_transactions_by_put(api_client: APIClient,
 
         # increase or decrease new amount to change
         if amount_transaction > 0:
-            amount_transaction = amount_transaction + 10000000.0
+            amount_transaction = amount_transaction + Decimal('10000000.00')
         elif amount_transaction < 0:
-            amount_transaction = amount_transaction - 10000000.0
+            amount_transaction = amount_transaction - Decimal('10000000.00')
 
         # change amount and category
-        transaction_to_get['amount'] = f'{amount_transaction:.2f}'
+        transaction_to_get['amount'] = str(amount_transaction)
         transaction_to_get['category'] = 'updated_category_by_put'
 
         # get existent object of database from api
@@ -40,10 +41,10 @@ def test_update_transactions_by_put(api_client: APIClient,
 
         # check returned payload with updated data
         assert response.status_code == status.HTTP_200_OK
-        assert response.data == transaction_to_get
+        assert response.json() == transaction_to_get
 
         # check update on database
         assert FinancialTransaction.objects.get(
-            reference=transaction_to_get["reference"]).amount == float(transaction_to_get["amount"])
+            reference=transaction_to_get["reference"]).amount == Decimal(transaction_to_get["amount"])
         assert FinancialTransaction.objects.get(
             reference=transaction_to_get["reference"]).category == 'updated_category_by_put'

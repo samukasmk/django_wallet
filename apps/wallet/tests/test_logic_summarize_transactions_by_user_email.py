@@ -1,3 +1,4 @@
+from decimal import Decimal
 from typing import List, Sequence
 
 import pytest
@@ -16,11 +17,11 @@ def test_summarize_all_transactions_by_user_email(mock_db_transactions: Sequence
     """
     summarized_queryset = summarize_all_transactions_by_user_email()
     assert list(summarized_queryset) == [{'user_email': 'janedoe@email.com',
-                                          'total_inflow': 2651.4399999999996,
-                                          'total_outflow': -761.85},
+                                          'total_inflow': Decimal('2651.44'),
+                                          'total_outflow': Decimal('-761.85')},
                                          {'user_email': 'johndoe@email.com',
-                                          'total_inflow': 0.0,
-                                          'total_outflow': -51.13}]
+                                          'total_inflow': Decimal('0.00'),
+                                          'total_outflow': Decimal('-51.13')}]
 
 
 @pytest.mark.django_db

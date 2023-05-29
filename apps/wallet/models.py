@@ -8,7 +8,7 @@ from apps.wallet.validators import (TransactionType,
 class FinancialTransaction(models.Model):
     reference = models.CharField(max_length=6, unique=True)
     date = models.DateField()
-    amount = models.FloatField()
+    amount = models.DecimalField(max_digits=33, decimal_places=2)
     type = models.CharField(max_length=7, choices=TransactionType.choices)
     category = models.CharField(max_length=250)
     user_email = models.EmailField()
@@ -23,11 +23,11 @@ class FinancialTransaction(models.Model):
 
     def to_dict(self) -> dict:
         """
-        Create new dict object from this model instance
+        Create new dict object from this model instance just represent it for manual querying
         """
         return {'reference': self.reference,
                 'date': str(self.date),
-                'amount': f'{self.amount:.2f}',
+                'amount': self.amount,
                 'type': self.get_type_display().lower(),
                 'category': self.category,
                 'user_email': self.user_email}
