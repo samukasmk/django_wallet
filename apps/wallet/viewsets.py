@@ -1,4 +1,5 @@
 from django.conf import settings
+from django.http import HttpResponseRedirect
 from drf_spectacular.utils import extend_schema as swagger_schema
 from rest_framework import mixins, status, viewsets
 from rest_framework.decorators import action
@@ -94,6 +95,13 @@ class FinancialTransactionViewSet(mixins.CreateModelMixin,
     serializer_class = FinancialTransactionSerializer
     lookup_field = 'reference'
     http_method_names = ['get', 'post', 'put', 'delete', 'head']
+
+    @swagger_schema(exclude=True)
+    def list(self, request, *args, **kwargs):
+        """
+        Redirect listing from: /transaction to: /transactions
+        """
+        return HttpResponseRedirect(redirect_to='/transactions')
 
     @swagger_schema(**create_single_transaction_schema)
     def create(self, request: Request, *args, **kwargs) -> Response:
