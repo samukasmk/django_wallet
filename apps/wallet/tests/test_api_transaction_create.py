@@ -3,8 +3,7 @@ from rest_framework import status
 from rest_framework.test import APIClient
 
 from apps.wallet.models import FinancialTransaction
-from apps.wallet.tests.conftest import (normalize_dict_to_model,
-                                        sample_transactions_data)
+from apps.wallet.tests.conftest import sample_transactions_data
 
 
 @pytest.mark.django_db
@@ -27,10 +26,10 @@ def test_creation_single_valid_transactions(api_client: APIClient, transaction_t
     created_db_transaction = db_transactions.first()
     assert created_db_transaction is not None
 
-    # compare requests dict with existing model instance
-    requested_transaction = normalize_dict_to_model(transaction_to_create)
-    for field_name, field_value in requested_transaction.items():
-        assert getattr(created_db_transaction, field_name) == field_value
+    # compare requested json with existing model instance
+    for json_field_name, json_field_value in transaction_to_create.items():
+        db_field = getattr(created_db_transaction, json_field_name)
+        assert str(db_field) == json_field_value
 
 
 @pytest.mark.django_db
@@ -49,9 +48,10 @@ def test_creation_single_transactions_invalid_type(api_client: APIClient, transa
     assert response.status_code == status.HTTP_400_BAD_REQUEST
 
     # check error response
-    assert 'type' in response.data
-    assert len(response.data['type'])
-    assert 'is not a valid choice' in str(response.data['type'][0])
+    response_dict = response.json()
+    assert 'type' in response_dict
+    assert len(response_dict['type'])
+    assert response_dict['type'][0] == '"invalid" is not a valid choice.'
 
     # check objects creation on db
     assert FinancialTransaction.objects.all().count() == 0
@@ -59,7 +59,7 @@ def test_creation_single_transactions_invalid_type(api_client: APIClient, transa
 
 @pytest.mark.django_db
 @pytest.mark.parametrize('transaction_to_create', sample_transactions_data())
-def test_creation_single_transactions_invalid_signals(api_client: APIClient, transaction_to_create: dict) -> None:
+def test_creation_single_transactions_invalid_amount_values(api_client: APIClient, transaction_to_create: dict) -> None:
     """
     Test endpoint to create transactions with invalid amount values of each transaction
     """
@@ -73,9 +73,15 @@ def test_creation_single_transactions_invalid_signals(api_client: APIClient, tra
     assert response.status_code == status.HTTP_400_BAD_REQUEST
 
     # check error response
-    assert 'amount' in response.data
-    assert len(response.data['amount'])
-    assert 'transactions can not have' in str(response.data['amount'][0])
+    response_dict = response.json()
+    assert 'amount' in response_dict
+    assert len(response_dict['amount'])
+    if transaction_to_create['type'] == 'inflow':
+        assert response_dict['amount'][0] == ('Inflow transactions can not have negative values in '
+                                              'the "amount" field, please provide a positive value.')
+    elif transaction_to_create['type'] == 'outflow':
+        assert response_dict['amount'][0] == ('Outflow transactions can not have positive values in '
+                                              'the "amount" field, please provide a negative value.')
 
     # check objects creation on db
     assert FinancialTransaction.objects.all().count() == 0
@@ -97,9 +103,10 @@ def test_creation_single_transactions_invalid_value(api_client: APIClient, trans
     assert response.status_code == status.HTTP_400_BAD_REQUEST
 
     # check error response
-    assert 'amount' in response.data
-    assert len(response.data['amount'])
-    assert 'Invalid float value' in str(response.data['amount'][0])
+    response_dict = response.json()
+    assert 'amount' in response_dict
+    assert len(response_dict['amount'])
+    assert response_dict['amount'][0] == 'A valid number is required.'
 
     # check objects creation on db
     assert FinancialTransaction.objects.all().count() == 0
@@ -124,9 +131,10 @@ def test_creation_single_transactions_missing_required_fields(api_client: APICli
     assert response.status_code == status.HTTP_400_BAD_REQUEST
 
     # check error response
-    assert required_field in response.data
-    assert len(response.data[required_field])
-    assert 'This field is required' in str(response.data[required_field][0])
+    response_dict = response.json()
+    assert required_field in response_dict
+    assert len(response_dict[required_field])
+    assert response_dict[required_field][0] == 'This field is required.'
 
     # check objects creation on db
     assert FinancialTransaction.objects.all().count() == 0

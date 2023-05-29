@@ -8,39 +8,10 @@ from apps.wallet.models import FinancialTransaction
 from apps.wallet.validators import validate_amount_signal_for_type
 
 
-class FloatFieldTwoDecimalPoints(serializers.Field):
-    """
-    Custom serializer field for format float values
-
-    serializing: converting from float to str with just two decimal points
-    deserializing: conversion from str into float validating it
-    """
-
-    def to_internal_value(self, data):
-        """
-        Convert from str to float value to save on db only if it's a str instance
-        """
-        try:
-            if isinstance(data, str):
-                data = float(data)
-        except (TypeError, ValueError):
-            raise serializers.ValidationError("Invalid float value")
-        return data
-
-    def to_representation(self, value):
-        """
-        Convert from float value to str with two decimal points to response serializer only if it's a float instance
-        """
-        if isinstance(value, float):
-            value = f'{value:.2f}'
-        return value
-
-
 class FinancialTransactionSerializer(serializers.ModelSerializer):
     """
     Serializer for LIST and POST actions
     """
-    amount = FloatFieldTwoDecimalPoints()
 
     class Meta:
         model = FinancialTransaction
@@ -50,8 +21,8 @@ class FinancialTransactionSerializer(serializers.ModelSerializer):
         """
         Validate input values from POST creations
         """
-        # check if reference has changed
-        if self.instance and self.instance.reference != data['reference']:
+        # check if the value of 'reference' has changed (ignored by patch if 'reference' field is not defined)
+        if self.instance and 'reference' in data.keys() and self.instance.reference != data['reference']:
             raise serializers.ValidationError({'reference': ('reference is a read-only field and '
                                                              'it can\'t be changed by payload.')})
 
@@ -74,16 +45,16 @@ class FinancialTransactionSerializer(serializers.ModelSerializer):
 
 class SummaryAllTransactionsByUser(serializers.Serializer):
     """
-    Serializer for json responses of aggregations by user
+    Response Serializer for json render of aggregations by user
     """
     user_email = serializers.EmailField()
-    total_inflow = FloatFieldTwoDecimalPoints()
-    total_outflow = FloatFieldTwoDecimalPoints()
+    total_inflow = serializers.DecimalField(max_digits=None, decimal_places=2)
+    total_outflow = serializers.DecimalField(max_digits=None, decimal_places=2)
 
 
 class SummaryUserTransactionByCategory(serializers.Serializer):
     """
-    Serializer for json responses of aggregations by user
+    Response Serializer for json render of aggregations by user
     """
     inflow = serializers.DictField()
     outflow = serializers.DictField()
@@ -91,12 +62,12 @@ class SummaryUserTransactionByCategory(serializers.Serializer):
     def to_representation(self, queryset_result: Sequence[FinancialTransaction]) -> dict:
         """
         Format QuerySet result into json response
+        for dinamic category fields round two places and force to string
         """
         response_dict = {'inflow': {}, 'outflow': {}}
         for summary_category in queryset_result:
-            flow_type = summary_category['type']
+            transaction_type = summary_category['type']
             category_name = summary_category['category']
-            total_category = f'{summary_category["total"]:.2f}'
-            response_dict[flow_type][category_name] = total_category
-
+            total_category = summary_category["total"]
+            response_dict[transaction_type][category_name] = str(round(total_category, 2))
         return response_dict

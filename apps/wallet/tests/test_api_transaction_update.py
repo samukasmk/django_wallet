@@ -1,4 +1,6 @@
+from decimal import Decimal
 from typing import Sequence
+from random import shuffle
 
 import pytest
 from rest_framework import status
@@ -19,20 +21,20 @@ def test_update_transactions_by_put(api_client: APIClient,
 
     # get each transaction on database one by one
     for transaction_to_get in transactions_to_get:
-        amount_transaction = float(transaction_to_get["amount"])
+        amount_transaction = Decimal(transaction_to_get['amount'])
 
         # ensure current amount is equal of request value in mock
         assert FinancialTransaction.objects.get(
-            reference=transaction_to_get["reference"]).amount == amount_transaction
+            reference=transaction_to_get['reference']).amount == amount_transaction
 
         # increase or decrease new amount to change
         if amount_transaction > 0:
-            amount_transaction = amount_transaction + 10000000.0
+            amount_transaction = amount_transaction + Decimal('10000000.00')
         elif amount_transaction < 0:
-            amount_transaction = amount_transaction - 10000000.0
+            amount_transaction = amount_transaction - Decimal('10000000.00')
 
-        # change amount and category
-        transaction_to_get['amount'] = f'{amount_transaction:.2f}'
+        # change amount and category in json payload
+        transaction_to_get['amount'] = str(amount_transaction)
         transaction_to_get['category'] = 'updated_category_by_put'
 
         # get existent object of database from api
@@ -40,10 +42,79 @@ def test_update_transactions_by_put(api_client: APIClient,
 
         # check returned payload with updated data
         assert response.status_code == status.HTTP_200_OK
-        assert response.data == transaction_to_get
+        assert response.json() == transaction_to_get
 
         # check update on database
         assert FinancialTransaction.objects.get(
-            reference=transaction_to_get["reference"]).amount == float(transaction_to_get["amount"])
+            reference=transaction_to_get['reference']).amount == Decimal(transaction_to_get['amount'])
         assert FinancialTransaction.objects.get(
-            reference=transaction_to_get["reference"]).category == 'updated_category_by_put'
+            reference=transaction_to_get['reference']).category == 'updated_category_by_put'
+
+
+@pytest.mark.django_db
+def test_update_read_only_field_reference_by_put(api_client: APIClient,
+                                                 mock_db_transactions: Sequence[FinancialTransaction]) -> None:
+    # get a json payload randomly shuffled
+    all_json_transactions = sample_transactions_data()
+    shuffle(all_json_transactions)
+    transaction_to_put = all_json_transactions[0]
+
+    # check model existence in db
+    assert FinancialTransaction.objects.get(reference=transaction_to_put["reference"])
+
+    # inject new reference if
+    current_reference_id = transaction_to_put['reference']
+    transaction_to_put['reference'] = f'999{transaction_to_put["reference"][3:]}'
+
+    response = api_client.put(f'/transaction/{current_reference_id}', transaction_to_put)
+    assert response.status_code == status.HTTP_400_BAD_REQUEST
+
+    response_json = response.json()
+    assert response_json['reference'][0] == "reference is a read-only field and it can't be changed by payload."
+
+
+@pytest.mark.django_db
+def test_update_transactions_by_patch(api_client: APIClient,
+                                      mock_db_transactions: Sequence[FinancialTransaction]) -> None:
+    # get a json payload randomly shuffled
+    all_json_transactions = sample_transactions_data()
+    shuffle(all_json_transactions)
+    transaction_to_patch = all_json_transactions[0]
+
+    # check model existence in db
+    assert FinancialTransaction.objects.get(
+        reference=transaction_to_patch["reference"]).user_email == transaction_to_patch['user_email']
+
+    # make patch request
+    new_email_address = 'updated_email@email.com'
+    response = api_client.patch(f'/transaction/{transaction_to_patch["reference"]}',
+                                {'user_email': new_email_address})
+
+    # check http status
+    assert response.status_code == status.HTTP_200_OK
+
+    # check specific value is updated
+    transaction_to_patch['user_email'] = new_email_address
+    assert response.json() == transaction_to_patch
+
+
+@pytest.mark.django_db
+def test_update_read_only_field_reference_by_patch(api_client: APIClient,
+                                                   mock_db_transactions: Sequence[FinancialTransaction]) -> None:
+    # get a json payload randomly shuffled
+    all_json_transactions = sample_transactions_data()
+    shuffle(all_json_transactions)
+    transaction_to_put = all_json_transactions[0]
+
+    # check model existence in db
+    assert FinancialTransaction.objects.get(reference=transaction_to_put["reference"])
+
+    # inject new reference if
+    current_reference_id = transaction_to_put['reference']
+    wrong_reference_id = f'999{transaction_to_put["reference"][3:]}'
+
+    response = api_client.patch(f'/transaction/{current_reference_id}', {'reference': wrong_reference_id})
+    assert response.status_code == status.HTTP_400_BAD_REQUEST
+
+    response_json = response.json()
+    assert response_json['reference'][0] == "reference is a read-only field and it can't be changed by payload."
