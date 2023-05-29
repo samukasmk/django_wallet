@@ -9,8 +9,8 @@ from apps.wallet.tests.conftest import sample_transactions_data
 
 
 @pytest.mark.django_db
-def test_list_transactions(api_client: APIClient,
-                           mock_db_transactions: Sequence[FinancialTransaction]) -> None:
+def test_list_bulk_transactions(api_client: APIClient,
+                                mock_db_transactions: Sequence[FinancialTransaction]) -> None:
     """
     Test endpoint to get all transactions
     """
