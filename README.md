@@ -1,5 +1,6 @@
 # belvo_wallet
-A very simple REST API that stores financial transactions records made by each user, summarizing spending, and receivables, and balances of transactions by category.
+A straightforward REST API that stores financial transaction records made by each user, summarizing spending,
+and receivables, and balances of transactions by category.
 
 This project is part of the technical test performed for Belvo company on the position of Backend Engineer - Mid Level position.
 
@@ -42,9 +43,9 @@ Swagger is a great REST API documentation tool that works with OpenAPI 3 standar
 
 If you prefer I've configured Swagger in this project. 
 
-To access the API documentation you just need click in next URL [http://127.0.0.1](http://127.0.0.1)
+To access the API documentation you just need to click on the next URL [http://127.0.0.1](http://127.0.0.1)
 
-> But don't forget to check if containers are created and running before access Swagger URL
+> But don't forget to check if containers are created and running before accessing Swagger URL
 
 **Swagger example:**
 
@@ -58,7 +59,7 @@ As requested in test description, I created 4 endpoint variations of `/transacti
 - summarize transactions by total inflows and outflows per user: `GET /transactions?group_by=type`
 - summarize transactions grouped by category: `GET /transactions/{user_email}/summary`
 
-I also created, in addition 4 more new endpoints variations of `/transaction` verb to:
+I also created in addition, 4 more new endpoints variations of `/transaction` verb to:
 - create a new single transaction record: `POST /transaction`
 - retrieve a transaction record by reference id: `GET /transaction/{reference}`
 - update transaction fields information: `PUT /transaction/{reference}`
