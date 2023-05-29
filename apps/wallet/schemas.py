@@ -126,3 +126,10 @@ update_single_transaction_schema = {
                               "type": "outflow",
                               "category": "candies",
                               "user_email": "janedoe@email.com"})]}
+
+partial_update_single_transaction_schema = {
+    'examples': [
+        OpenApiExample('Update a specific field: changing amount and category values',
+                       value={"amount": "777.77",
+                              "type": "inflow",
+                              "category": "lotery"})]}
