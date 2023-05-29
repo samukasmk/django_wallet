@@ -3,8 +3,7 @@ from rest_framework import status
 from rest_framework.test import APIClient
 
 from apps.wallet.models import FinancialTransaction
-from apps.wallet.tests.conftest import (normalize_dict_to_model,
-                                        sample_transactions_data)
+from apps.wallet.tests.conftest import sample_transactions_data
 
 
 @pytest.mark.django_db
@@ -29,12 +28,10 @@ def test_creation_bulk_valid_transactions(api_client: APIClient) -> None:
         # get requested dict
         requested_transaction = transactions_to_create[index_position]
 
-        # compare requests dict with existing model instance
-        requested_transaction = normalize_dict_to_model(requested_transaction)
-
-        # check each field of requested dict is equal to model field
-        for field_name, field_value in requested_transaction.items():
-            assert getattr(created_db_transaction, field_name) == field_value
+        # check each field of requested json is equal to model field
+        for json_field_name, json_field_value in requested_transaction.items():
+            db_field = getattr(created_db_transaction, json_field_name)
+            assert str(db_field) == json_field_value
 
 
 @pytest.mark.django_db
@@ -55,23 +52,23 @@ def test_creation_bulk_transactions_invalid_type(api_client: APIClient) -> None:
 
     # check error response
     error_responses = [error_detail['type']
-                       for error_detail in response.data
+                       for error_detail in response.json()
                        if 'type' in error_detail.keys()]
-    assert len(error_responses)
-    assert 'is not a valid choice' in str(error_responses[0])
+    assert error_responses[0][0] == '"invalid_type" is not a valid choice.'
 
     # check objects creation on db
     assert FinancialTransaction.objects.all().count() == 0
 
 
 @pytest.mark.django_db
-def test_creation_bulk_transactions_invalid_signals(api_client: APIClient) -> None:
+def test_creation_bulk_transactions_invalid_amount_values(api_client: APIClient) -> None:
     """
     Test endpoint to create transactions with invalid amount values of many transactions
     """
     transactions_to_create = sample_transactions_data()
 
     # change amount value for invalid signal for transaction type
+    transaction_type = transactions_to_create[-1]['type']
     transactions_to_create[-1]['amount'] = str(-float(transactions_to_create[-1]['amount']))
 
     # make api request
@@ -82,10 +79,14 @@ def test_creation_bulk_transactions_invalid_signals(api_client: APIClient) -> No
 
     # check error response
     error_responses = [error_detail['amount']
-                       for error_detail in response.data
+                       for error_detail in response.json()
                        if 'amount' in error_detail.keys()]
-    assert len(error_responses)
-    assert 'transactions can not have' in str(error_responses[0])
+    if transaction_type == 'inflow':
+        assert error_responses[0][0] == ('Inflow transactions can not have negative values in '
+                                         'the "amount" field, please provide a positive value.')
+    elif transaction_type == 'outflow':
+        assert error_responses[0][0] == ('Outflow transactions can not have positive values in '
+                                         'the "amount" field, please provide a negative value.')
 
     # check objects creation on db
     assert FinancialTransaction.objects.all().count() == 0
@@ -111,8 +112,7 @@ def test_creation_bulk_transactions_invalid_value(api_client: APIClient) -> None
     error_responses = [error_detail['amount']
                        for error_detail in response.data
                        if 'amount' in error_detail.keys()]
-    assert len(error_responses)
-    assert 'Invalid float value' in str(error_responses[0])
+    assert error_responses[0][0] == 'A valid number is required.'
 
     # check objects creation on db
     assert FinancialTransaction.objects.all().count() == 0
@@ -142,8 +142,7 @@ def test_creation_bulk_transactions_missing_required_fields(api_client: APIClien
     error_responses = [error_detail[required_field]
                        for error_detail in response.data
                        if required_field in error_detail.keys()]
-    assert len(error_responses)
-    assert 'This field is required' in str(error_responses[0])
+    assert error_responses[0][0] == 'This field is required.'
 
     # check objects creation on db
     assert FinancialTransaction.objects.all().count() == 0

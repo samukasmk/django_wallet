@@ -6,8 +6,7 @@ from rest_framework.exceptions import ValidationError
 
 from apps.wallet.models import FinancialTransaction
 from apps.wallet.serializers import FinancialTransactionSerializer
-from apps.wallet.tests.conftest import (normalize_dict_to_model,
-                                        sample_transactions_data)
+from apps.wallet.tests.conftest import sample_transactions_data
 
 
 @pytest.mark.django_db
@@ -35,9 +34,9 @@ def test_serializer_create_single_transactions(transaction_to_create: dict) -> N
     assert created_db_transaction is not None
 
     # compare requests dict with existing model instance
-    requested_transaction = normalize_dict_to_model(transaction_to_create)
-    for field_name, field_value in requested_transaction.items():
-        assert getattr(created_db_transaction, field_name) == field_value
+    for json_field_name, json_field_value in transaction_to_create.items():
+        db_field = getattr(created_db_transaction, json_field_name)
+        assert str(db_field) == json_field_value
 
 
 @pytest.mark.django_db
@@ -63,12 +62,10 @@ def test_serializer_create_bulk_transactions() -> None:
         # get requested dict
         requested_transaction = transactions_to_create[index_position]
 
-        # compare requests dict with existing model instance
-        requested_transaction = normalize_dict_to_model(requested_transaction)
-
-        # check each field of requested dict is equal to model field
-        for field_name, field_value in requested_transaction.items():
-            assert getattr(created_db_transaction, field_name) == field_value
+        # check each field of requested json is equal to model field
+        for json_field_name, json_field_value in requested_transaction.items():
+            db_field = getattr(created_db_transaction, json_field_name)
+            assert str(db_field) == json_field_value
 
 
 @pytest.mark.django_db
@@ -111,5 +108,4 @@ def test_serializer_update_reference_ready_only_field(mock_db_transactions: Sequ
     serializer = FinancialTransactionSerializer(db_transaction, data=transaction_to_update, partial=False)
     with pytest.raises(ValidationError):
         assert serializer.is_valid(raise_exception=True) is False
-        assert 'reference' in serializer.errors
-        assert 'reference is a read-only field' in str(serializer.errors['reference'][0])
+        assert serializer.errors['reference'][0][0] == 'reference is a read-only field'

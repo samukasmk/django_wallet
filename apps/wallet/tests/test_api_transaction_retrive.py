@@ -22,4 +22,4 @@ def test_get_transactions(api_client: APIClient,
         # get existent object of database from api
         response = api_client.get(f'/transaction/{transaction_to_get["reference"]}')
         assert response.status_code == status.HTTP_200_OK
-        assert response.data == transaction_to_get
+        assert response.json() == transaction_to_get

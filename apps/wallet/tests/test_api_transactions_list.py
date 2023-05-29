@@ -9,8 +9,8 @@ from apps.wallet.tests.conftest import sample_transactions_data
 
 
 @pytest.mark.django_db
-def test_list_transactions(api_client: APIClient,
-                           mock_db_transactions: Sequence[FinancialTransaction]) -> None:
+def test_list_bulk_transactions(api_client: APIClient,
+                                mock_db_transactions: Sequence[FinancialTransaction]) -> None:
     """
     Test endpoint to get all transactions
     """
@@ -22,4 +22,4 @@ def test_list_transactions(api_client: APIClient,
     # get existent objects of database from api
     response = api_client.get('/transactions')
     assert response.status_code == status.HTTP_200_OK
-    assert [dict(i) for i in response.data] == transactions_to_get
+    assert response.json() == transactions_to_get

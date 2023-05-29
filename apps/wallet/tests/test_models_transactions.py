@@ -1,4 +1,5 @@
 from datetime import date
+from decimal import Decimal
 
 import pytest
 
@@ -86,7 +87,7 @@ def test_model_method_transaction_to_dict() -> None:
     created_transaction = FinancialTransaction.objects.first()
     assert created_transaction.to_dict() == dict(reference='001001',
                                                  date='2021-05-01',
-                                                 amount='10000.00',
+                                                 amount=Decimal('10000.00'),
                                                  type='inflow',
                                                  category='savings',
                                                  user_email='john@email.com')
@@ -106,7 +107,7 @@ def test_model_method_transaction_to_str() -> None:
     created_transaction = FinancialTransaction.objects.first()
     assert str(created_transaction) == str(dict(reference='001001',
                                                 date='2021-05-01',
-                                                amount='10000.00',
+                                                amount=Decimal('10000.00'),
                                                 type='inflow',
                                                 category='savings',
                                                 user_email='john@email.com'))

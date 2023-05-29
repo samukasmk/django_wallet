@@ -144,6 +144,9 @@ EMAIL_REGEX = rf'{HOSTNAME_REGEX}@{HOSTNAME_REGEX}\.{HOSTNAME_REGEX}'
 # Django Rest Framework
 REST_FRAMEWORK = {
     'DEFAULT_SCHEMA_CLASS': 'drf_spectacular.openapi.AutoSchema',
+    'DEFAULT_RENDERER_CLASSES': [
+        'rest_framework.renderers.JSONRenderer',
+    ]
 }
 
 # Swagger: API docs from drf_spetacular
@@ -152,6 +155,7 @@ SPECTACULAR_SETTINGS = {
     'DESCRIPTION': 'A very simple REST API that stores financial transactions made by each user, summarizes spending and receivables and accounts transaction balances by category.',
     'VERSION': '0.0.2',
     'SERVE_INCLUDE_SCHEMA': False,
-    'SORT_OPERATIONS': False,
-    'SORT_OPERATION_PARAMETERS': False,
+    'POSTPROCESSING_HOOKS': [
+        'core.openapi.reordering_endpoints_paths',
+    ],
 }
