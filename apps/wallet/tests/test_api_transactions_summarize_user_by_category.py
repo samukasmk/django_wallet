@@ -26,4 +26,4 @@ def test_summarize_all_transactions_by_user(api_client: APIClient,
     assert response.status_code == status.HTTP_200_OK
 
     # assert response
-    assert response.data == user_summary_by_category
+    assert response.json() == user_summary_by_category

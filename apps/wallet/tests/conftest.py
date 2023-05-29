@@ -1,4 +1,5 @@
 from datetime import datetime
+from decimal import Decimal
 
 import pytest
 from model_bakery import baker
@@ -84,21 +85,21 @@ def sample_expected_queryset_summary_by_category():
     """ Sample data of QuerySet result with summary of each user transactions by inflow and outflow categories """
 
     return [['janedoe@email.com',
-             [{'type': 'inflow', 'category': 'salary', 'total': 2500.72},
-              {'type': 'inflow', 'category': 'savings', 'total': 150.72},
-              {'type': 'outflow', 'category': 'groceries', 'total': -51.13},
-              {'type': 'outflow', 'category': 'rent', 'total': -560.0},
-              {'type': 'outflow', 'category': 'transfer', 'total': -150.72}]],
+             [{'type': 'inflow', 'category': 'salary', 'total': Decimal('2500.72')},
+              {'type': 'inflow', 'category': 'savings', 'total': Decimal('150.72')},
+              {'type': 'outflow', 'category': 'groceries', 'total': Decimal('-51.13')},
+              {'type': 'outflow', 'category': 'rent', 'total': Decimal('-560.0')},
+              {'type': 'outflow', 'category': 'transfer', 'total': Decimal('-150.72')}]],
 
             ['johndoe@email.com',
-             [{'type': 'outflow', 'category': 'other', 'total': -51.13}]]]
+             [{'type': 'outflow', 'category': 'other', 'total': Decimal('-51.13')}]]]
 
 
-def normalize_dict_to_model(transaction_dict):
+def dict_to_model(transaction_dict):
     """ Normalize dict object of a transaction to expected data in database """
     # normalizing amount value
     transaction_dict.update(
-        {'amount': float(transaction_dict['amount']),
+        {'amount': Decimal(transaction_dict['amount']),
          'date': datetime.strptime(transaction_dict['date'], '%Y-%m-%d').date()})
 
     return transaction_dict
@@ -107,5 +108,5 @@ def normalize_dict_to_model(transaction_dict):
 @pytest.fixture(scope="function")
 def mock_db_transactions():
     return [baker.make('FinancialTransaction',
-                       **normalize_dict_to_model(transaction_to_create))
+                       **dict_to_model(transaction_to_create))
             for transaction_to_create in sample_transactions_data()]

@@ -23,4 +23,4 @@ def test_summarize_all_transactions_by_user(api_client: APIClient,
     assert response.status_code == status.HTTP_200_OK
 
     # assert response
-    assert response.data == sample_expected_payload_summary_by_user_email()
+    assert response.json() == sample_expected_payload_summary_by_user_email()
