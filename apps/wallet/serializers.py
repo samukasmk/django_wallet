@@ -19,10 +19,6 @@ class FinancialTransactionSerializer(serializers.ModelSerializer):
         """
         Validate input values from POST creations
         """
-        # check if the value of 'reference' has changed (ignored by patch if 'reference' field is not defined)
-        if self.instance and 'reference' in attrs.keys() and self.instance.reference != attrs['reference']:
-            raise serializers.ValidationError({'reference': ('reference is a read-only field and '
-                                                             'it can\'t be changed by payload.')})
 
         # call builtin validations of serializer field
         attrs = super().validate(attrs)

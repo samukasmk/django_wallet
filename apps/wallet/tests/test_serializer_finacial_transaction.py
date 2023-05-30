@@ -93,24 +93,3 @@ def test_serializer_validation_errors(mock) -> None:
             assert exc.messages[0] == error_messages['invalid_inflow_amount_value']
         elif transaction_to_create['type'] == 'outflow':
             assert exc.messages[0] == error_messages['invalid_outflow_amount_value']
-
-
-@pytest.mark.django_db
-def test_serializer_update_reference_ready_only_field(mock_db_transactions: Sequence[FinancialTransaction]) -> None:
-    """
-    Test reference field overwriting by payload
-    """
-    # get some requested transaction
-    transaction_to_update = sample_transactions_data()[3]
-
-    # check first scenery
-    db_transaction = FinancialTransaction.objects.get(reference=transaction_to_update['reference'])
-
-    # overwrite reference field
-    transaction_to_update['reference'] = '999999'
-
-    # check serializer validations without failures
-    serializer = FinancialTransactionSerializer(db_transaction, data=transaction_to_update, partial=False)
-    with pytest.raises(ValidationError):
-        assert serializer.is_valid(raise_exception=True) is False
-        assert serializer.errors['reference'][0][0] == 'reference is a read-only field'
