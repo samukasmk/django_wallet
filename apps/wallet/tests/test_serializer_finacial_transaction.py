@@ -6,6 +6,7 @@ from rest_framework.exceptions import ValidationError
 
 from apps.wallet.models import FinancialTransaction
 from apps.wallet.serializers import FinancialTransactionSerializer
+from apps.wallet.validators import error_messages
 from apps.wallet.tests.conftest import sample_transactions_data
 
 
@@ -74,11 +75,11 @@ def test_serializer_validation_errors(mock) -> None:
     """
     Test serializer reassignments of ValidationError from validation errors
     """
-    # mock validation response with expected exception
-    # mocker = mock.patch('apps.wallet.serializers.validate_amount_signal_for_type', 42)
-
     # get some transaction data to test
     transaction_to_create = sample_transactions_data()[0]
+
+    # convert amount to negative or positive
+    transaction_to_create['amount'] = str(-float(transaction_to_create['amount']))
 
     # check first scenery
     assert FinancialTransaction.objects.all().count() == 0
@@ -86,8 +87,12 @@ def test_serializer_validation_errors(mock) -> None:
     # check serializer validations without failures
     serializer = FinancialTransactionSerializer(data=transaction_to_create)
 
-    with pytest.raises(ValidationError):
+    with pytest.raises(ValidationError) as exc:
         assert serializer.is_valid(raise_exception=True)
+        if transaction_to_create['type'] == 'inflow':
+            assert exc.messages[0] == error_messages['invalid_inflow_amount_value']
+        elif transaction_to_create['type'] == 'outflow':
+            assert exc.messages[0] == error_messages['invalid_outflow_amount_value']
 
 
 @pytest.mark.django_db

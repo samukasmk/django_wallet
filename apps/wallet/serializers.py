@@ -1,9 +1,7 @@
 from typing import Sequence
-
+from django.core.exceptions import ValidationError
 from rest_framework import serializers
 
-from apps.wallet.exceptions import (InflowTransactionHasANegativeAmount,
-                                    OutflowTransactionHasAPositiveAmount)
 from apps.wallet.models import FinancialTransaction
 from apps.wallet.validators import validate_amount_signal_for_type
 
@@ -17,30 +15,23 @@ class FinancialTransactionSerializer(serializers.ModelSerializer):
         model = FinancialTransaction
         fields = ['reference', 'date', 'amount', 'type', 'category', 'user_email']
 
-    def validate(self, data: dict) -> dict:
+    def validate(self, attrs: dict) -> dict:
         """
         Validate input values from POST creations
         """
         # check if the value of 'reference' has changed (ignored by patch if 'reference' field is not defined)
-        if self.instance and 'reference' in data.keys() and self.instance.reference != data['reference']:
+        if self.instance and 'reference' in attrs.keys() and self.instance.reference != attrs['reference']:
             raise serializers.ValidationError({'reference': ('reference is a read-only field and '
                                                              'it can\'t be changed by payload.')})
 
-        # check signal of amount value before call save method.
-        try:
-            if 'type' in data.keys() and 'amount' in data.keys():
-                validate_amount_signal_for_type(data['type'], float(data['amount']))
-        except InflowTransactionHasANegativeAmount as exc:
-            raise serializers.ValidationError(
-                {'amount': InflowTransactionHasANegativeAmount.message}) from exc
-        except OutflowTransactionHasAPositiveAmount as exc:
-            raise serializers.ValidationError(
-                {'amount': OutflowTransactionHasAPositiveAmount.message}) from exc
-        except Exception as exc:
-            raise serializers.ValidationError({'unknown': 'error on validation'}) from exc
+        # call builtin validations of serializer field
+        attrs = super().validate(attrs)
 
-        # call other validations of inheritance
-        return super().validate(data)
+        # check business logic validations
+        instance = self.instance if self.instance else FinancialTransaction(**attrs)
+        instance.clean()
+
+        return attrs
 
 
 class SummaryAllTransactionsByUser(serializers.Serializer):

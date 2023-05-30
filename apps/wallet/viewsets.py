@@ -87,6 +87,7 @@ class FinancialTransactionViewSet(viewsets.ModelViewSet):
     queryset = FinancialTransaction.objects.all()
     serializer_class = FinancialTransactionSerializer
     lookup_field = 'reference'
+
     # http_method_names = ['get', 'post', 'put', 'delete', 'head']
 
     @swagger_schema(exclude=True)
