@@ -1,5 +1,5 @@
 from django.db import models
-
+from apps.wallet.logic import FinancialTransactionManager
 from apps.wallet.validators import (TransactionType,
                                     validate_amount_signal_for_type,
                                     validate_flow_type)
@@ -12,6 +12,9 @@ class FinancialTransaction(models.Model):
     type = models.CharField(max_length=7, choices=TransactionType.choices)
     category = models.CharField(max_length=250)
     user_email = models.EmailField()
+
+    # add aggregate queries with business logic
+    objects = FinancialTransactionManager()
 
     def save(self, *args, **kwargs) -> None:
         """
