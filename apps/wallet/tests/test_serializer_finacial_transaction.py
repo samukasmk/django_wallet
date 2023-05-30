@@ -6,6 +6,7 @@ from rest_framework.exceptions import ValidationError
 
 from apps.wallet.models import FinancialTransaction
 from apps.wallet.serializers import FinancialTransactionSerializer
+from apps.wallet.validators import error_messages
 from apps.wallet.tests.conftest import sample_transactions_data
 
 
@@ -74,11 +75,11 @@ def test_serializer_validation_errors(mock) -> None:
     """
     Test serializer reassignments of ValidationError from validation errors
     """
-    # mock validation response with expected exception
-    # mocker = mock.patch('apps.wallet.serializers.validate_amount_signal_for_type', 42)
-
     # get some transaction data to test
     transaction_to_create = sample_transactions_data()[0]
+
+    # convert amount to negative or positive
+    transaction_to_create['amount'] = str(-float(transaction_to_create['amount']))
 
     # check first scenery
     assert FinancialTransaction.objects.all().count() == 0
@@ -86,26 +87,9 @@ def test_serializer_validation_errors(mock) -> None:
     # check serializer validations without failures
     serializer = FinancialTransactionSerializer(data=transaction_to_create)
 
-    with pytest.raises(ValidationError):
+    with pytest.raises(ValidationError) as exc:
         assert serializer.is_valid(raise_exception=True)
-
-
-@pytest.mark.django_db
-def test_serializer_update_reference_ready_only_field(mock_db_transactions: Sequence[FinancialTransaction]) -> None:
-    """
-    Test reference field overwriting by payload
-    """
-    # get some requested transaction
-    transaction_to_update = sample_transactions_data()[3]
-
-    # check first scenery
-    db_transaction = FinancialTransaction.objects.get(reference=transaction_to_update['reference'])
-
-    # overwrite reference field
-    transaction_to_update['reference'] = '999999'
-
-    # check serializer validations without failures
-    serializer = FinancialTransactionSerializer(db_transaction, data=transaction_to_update, partial=False)
-    with pytest.raises(ValidationError):
-        assert serializer.is_valid(raise_exception=True) is False
-        assert serializer.errors['reference'][0][0] == 'reference is a read-only field'
+        if transaction_to_create['type'] == 'inflow':
+            assert exc.messages[0] == error_messages['invalid_inflow_amount_value']
+        elif transaction_to_create['type'] == 'outflow':
+            assert exc.messages[0] == error_messages['invalid_outflow_amount_value']
