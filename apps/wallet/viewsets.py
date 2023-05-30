@@ -6,8 +6,6 @@ from rest_framework.decorators import action
 from rest_framework.request import Request
 from rest_framework.response import Response
 
-from apps.wallet.logic import (summarize_all_transactions_by_user_email,
-                               summarize_user_transactions_by_category)
 from apps.wallet.models import FinancialTransaction
 from apps.wallet.schemas import (create_many_transactions_schema,
                                  create_single_transaction_schema,
@@ -51,7 +49,7 @@ class FinancialTransactionsViewSet(mixins.CreateModelMixin, mixins.ListModelMixi
         """
         Aggregate amount values of all transactions grouping by user.
         """
-        queryset = summarize_all_transactions_by_user_email()
+        queryset = FinancialTransaction.objects.summarize_all_transactions_by_user_email()
         serializer = SummaryAllTransactionsByUser(queryset, many=True)
         return Response(serializer.data, status=status.HTTP_200_OK)
 
@@ -61,7 +59,7 @@ class FinancialTransactionsViewSet(mixins.CreateModelMixin, mixins.ListModelMixi
         """
         Return user's transactions summary, grouping the sum transactions amount by categories.
         """
-        queryset = summarize_user_transactions_by_category(user_email)
+        queryset = FinancialTransaction.objects.summarize_user_transactions_by_category(user_email)
         serializer = SummaryUserTransactionByCategory(queryset)
         return Response(serializer.data, status=status.HTTP_200_OK)
 
