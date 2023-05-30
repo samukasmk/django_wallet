@@ -87,6 +87,7 @@ class FinancialTransactionViewSet(viewsets.ModelViewSet):
     queryset = FinancialTransaction.objects.all()
     serializer_class = FinancialTransactionSerializer
     lookup_field = 'reference'
+
     # http_method_names = ['get', 'post', 'put', 'delete', 'head']
 
     @swagger_schema(exclude=True)
@@ -114,8 +115,6 @@ class FinancialTransactionViewSet(viewsets.ModelViewSet):
     def update(self, request: Request, *args, **kwargs) -> Response:
         """
         Update full fields a single financial transaction record by reference id.
-
-        Note: the reference field is read-only in payload, and it can't be changed by put.
         """
         return super().update(request, *args, **kwargs)
 
@@ -123,8 +122,6 @@ class FinancialTransactionViewSet(viewsets.ModelViewSet):
     def partial_update(self, request, *args, **kwargs):
         """
         Update specific fields of a single financial transaction record by reference id.
-
-        Note: the reference field is read-only in payload, and it can't be changed by patch.
         """
         return super().partial_update(request, *args, **kwargs)
 

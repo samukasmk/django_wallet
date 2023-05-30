@@ -16,12 +16,18 @@ class FinancialTransaction(models.Model):
     # add aggregate queries with business logic
     objects = FinancialTransactionManager()
 
-    def save(self, *args, **kwargs) -> None:
+    def clean(self) -> None:
         """
         Data validation before to saving on db
         """
         validate_flow_type(transaction_type=self.type)
         validate_amount_signal_for_type(transaction_type=self.type, transaction_amount=self.amount)
+
+    def save(self, *args, **kwargs) -> None:
+        """
+        Checking data values before to save instance on database
+        """
+        self.full_clean()
         return super().save(*args, **kwargs)
 
     def to_dict(self) -> dict:
