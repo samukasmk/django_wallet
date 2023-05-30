@@ -83,7 +83,7 @@ create_single_transaction_schema = {
                               "date": "2023-05-27",
                               "amount": "38.00",
                               "type": "inflow",
-                              "category": "investiment",
+                              "category": "investment",
                               "user_email": "janedoe@email.com"}),
         OpenApiExample('Create an outflow transaction record',
                        value={"reference": "000002",
@@ -100,7 +100,7 @@ retrieve_single_transaction_schema = {
                               "date": "2023-05-27",
                               "amount": "38.00",
                               "type": "inflow",
-                              "category": "investiment",
+                              "category": "investment",
                               "user_email": "janedoe@email.com"}),
         OpenApiExample('Get an outflow transaction record',
                        value={"reference": "000002",
@@ -117,7 +117,7 @@ update_single_transaction_schema = {
                               "date": "2023-05-27",
                               "amount": "1000000.10",
                               "type": "inflow",
-                              "category": "investiment",
+                              "category": "investment",
                               "user_email": "janedoe@email.com"}),
         OpenApiExample('Update an outflow transaction record',
                        value={"reference": "000002",
@@ -132,4 +132,4 @@ partial_update_single_transaction_schema = {
         OpenApiExample('Update a specific field: changing amount and category values',
                        value={"amount": "777.77",
                               "type": "inflow",
-                              "category": "lotery"})]}
+                              "category": "lottery"})]}

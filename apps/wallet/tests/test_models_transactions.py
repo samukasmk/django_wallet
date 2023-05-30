@@ -55,7 +55,7 @@ def test_create_unexpected_inflow_negative_amount() -> None:
                                             date='2021-05-03',
                                             amount=-30000.0,
                                             type='inflow',
-                                            category='lotery',
+                                            category='lottery',
                                             user_email='josephine@email.com')
     assert FinancialTransaction.objects.all().count() == 0
 
