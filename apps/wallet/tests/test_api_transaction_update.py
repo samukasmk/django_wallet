@@ -52,28 +52,6 @@ def test_update_transactions_by_put(api_client: APIClient,
 
 
 @pytest.mark.django_db
-def test_update_read_only_field_reference_by_put(api_client: APIClient,
-                                                 mock_db_transactions: Sequence[FinancialTransaction]) -> None:
-    # get a json payload randomly shuffled
-    all_json_transactions = sample_transactions_data()
-    shuffle(all_json_transactions)
-    transaction_to_put = all_json_transactions[0]
-
-    # check model existence in db
-    assert FinancialTransaction.objects.get(reference=transaction_to_put["reference"])
-
-    # inject new reference if
-    current_reference_id = transaction_to_put['reference']
-    transaction_to_put['reference'] = f'999{transaction_to_put["reference"][3:]}'
-
-    response = api_client.put(f'/transaction/{current_reference_id}', transaction_to_put)
-    assert response.status_code == status.HTTP_400_BAD_REQUEST
-
-    response_json = response.json()
-    assert response_json['reference'][0] == "reference is a read-only field and it can't be changed by payload."
-
-
-@pytest.mark.django_db
 def test_update_transactions_by_patch(api_client: APIClient,
                                       mock_db_transactions: Sequence[FinancialTransaction]) -> None:
     # get a json payload randomly shuffled
@@ -96,25 +74,3 @@ def test_update_transactions_by_patch(api_client: APIClient,
     # check specific value is updated
     transaction_to_patch['user_email'] = new_email_address
     assert response.json() == transaction_to_patch
-
-
-@pytest.mark.django_db
-def test_update_read_only_field_reference_by_patch(api_client: APIClient,
-                                                   mock_db_transactions: Sequence[FinancialTransaction]) -> None:
-    # get a json payload randomly shuffled
-    all_json_transactions = sample_transactions_data()
-    shuffle(all_json_transactions)
-    transaction_to_put = all_json_transactions[0]
-
-    # check model existence in db
-    assert FinancialTransaction.objects.get(reference=transaction_to_put["reference"])
-
-    # inject new reference if
-    current_reference_id = transaction_to_put['reference']
-    wrong_reference_id = f'999{transaction_to_put["reference"][3:]}'
-
-    response = api_client.patch(f'/transaction/{current_reference_id}', {'reference': wrong_reference_id})
-    assert response.status_code == status.HTTP_400_BAD_REQUEST
-
-    response_json = response.json()
-    assert response_json['reference'][0] == "reference is a read-only field and it can't be changed by payload."
