@@ -45,7 +45,7 @@ install-development: install-dev
 
 ### actions to build new envs
 collect-static-files:
-	mkdir -p /opt/belvo_files/{static,media} \
+	mkdir -p /opt/django_files/{static,media} \
 		&& ./manage.py collectstatic --no-input --clear
 
 apply-db-migrations:
