@@ -13,8 +13,8 @@ RUN apt-get update && \
     rm -rf /var/lib/apt/lists/*
 
 # Copy files to new image
-WORKDIR /opt/belvo_wallet
-COPY . /opt/belvo_wallet
+WORKDIR /opt/django_wallet
+COPY . /opt/django_wallet
 
 # Fake sudo command in container
 RUN echo '$*' > /bin/sudo
