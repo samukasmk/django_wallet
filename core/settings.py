@@ -78,8 +78,8 @@ WSGI_APPLICATION = 'core.wsgi.application'
 DATABASES = {
     'default': {
         'ENGINE': os.environ.get('DATABASE_ENGINE', 'django.db.backends.postgresql'),
-        'NAME': os.environ.get('DATABASE_NAME', 'belvo_wallet'),
-        'USER': os.environ.get('DATABASE_USER', 'belvo_wallet'),
+        'NAME': os.environ.get('DATABASE_NAME', 'django_wallet'),
+        'USER': os.environ.get('DATABASE_USER', 'django_wallet'),
         'PASSWORD': os.environ.get('DATABASE_PASSWORD', 'P4s5W0RD'),
         'HOST': os.environ.get('DATABASE_HOST', '127.0.0.1'),
         'PORT': os.environ.get('DATABASE_PORT', 5432),
@@ -127,7 +127,7 @@ DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
 
 # Media URL files
 MEDIA_URL = '/media/'
-MEDIA_ROOT = '/opt/belvo_files/media'
+MEDIA_ROOT = '/opt/django_files/media'
 
 # Static files
 STATIC_URL = '/static/'
@@ -135,7 +135,7 @@ STATICFILES_DIRS = [
     os.path.join(BASE_DIR, 'static')
 ]
 
-STATIC_ROOT = '/opt/belvo_files/static'
+STATIC_ROOT = '/opt/django_files/static'
 
 # Email regex pattern to use in URLs
 HOSTNAME_REGEX = r'[a-zA-Z0-9\_\-+\.]+'
@@ -151,7 +151,7 @@ REST_FRAMEWORK = {
 
 # Swagger: API docs from drf_spetacular
 SPECTACULAR_SETTINGS = {
-    'TITLE': 'Belvo Wallet API',
+    'TITLE': 'Django Wallet API',
     'DESCRIPTION': 'A very simple REST API that stores financial transactions made by each user, summarizes spending and receivables and accounts transaction balances by category.',
     'VERSION': '0.0.2',
     'SERVE_INCLUDE_SCHEMA': False,
