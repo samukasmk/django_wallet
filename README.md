@@ -1,16 +1,10 @@
-# belvo_wallet
+# django_wallet
 A straightforward REST API that stores financial transaction records made by each user, summarizing spending,
 and receivables, and balances of transactions by category.
 
-
-This project is part of the technical test performed for Belvo company on the position of Backend Engineer - Mid Level
-position.
-
-**By:** Samuel Maciel Sampaio
-
-**Email:** <mailto:samuel.maciel.sampaio@gmail.com>
-
-**Github:** @samukasmk
+- **By:** Samuel Maciel Sampaio
+- **Email:** <mailto:samuel.maciel.sampaio@gmail.com>
+- **Github:** @samukasmk
 
 ## Installation
 
@@ -27,10 +21,10 @@ To run this app on Docker containers, please execute the commands below:
 
 ```shell
 # clone this repository
-git clone git@github.com:samukasmk/belvo_wallet.git
+git clone git@github.com:samukasmk/django_wallet.git
 
 # access new folder
-cd belvo_wallet
+cd django_wallet
 
 # build and run the apps inside containers
 docker-compose up --build -d
@@ -210,10 +204,10 @@ To run this Django project in your local machine, execute the commands below:
 
 ```shell
 # clone this repository
-git clone https://github.com/samukasmk/belvo_wallet.git
+git clone https://github.com/samukasmk/django_wallet.git
 
 # access new folder
-cd belvo_wallet
+cd django_wallet
 
 # create new virtualenv
 python3 -m venv ./venv
